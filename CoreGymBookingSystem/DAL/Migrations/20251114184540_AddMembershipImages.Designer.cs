@@ -4,6 +4,7 @@ using DAL.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251114184540_AddMembershipImages")]
+    partial class AddMembershipImages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,7 +56,6 @@ namespace DAL.Migrations
                         {
                             Id = 1,
                             Description = "Unlimited access to all classes and gym facilities.",
-                            ImageUrl = "/Gym_Tem/img/memberships/adult.jpg",
                             Name = "Adult Membership",
                             Price = 399m
                         },
@@ -69,7 +71,6 @@ namespace DAL.Migrations
                         {
                             Id = 3,
                             Description = "Full gym access with flexible hours for seniors aged 65+.",
-                            ImageUrl = "/Gym_Tem/img/memberships/senior.jpg",
                             Name = "Senior Membership",
                             Price = 249m
                         });

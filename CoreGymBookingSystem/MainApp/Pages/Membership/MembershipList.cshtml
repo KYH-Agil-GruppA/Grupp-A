@@ -27,6 +27,9 @@
                             <h2>@m.Price kr</h2>
                             <span>PERIOD</span>
                         </div>
+                        <div class="ps-item-pic">
+                            <img src="@m.ImageUrl" alt="@m.Name" style="width:100%; height:auto;" />
+                        </div>
 
                         <ul>
                             <li>@m.Description</li>
@@ -44,4 +47,45 @@
             }
         </div>
     </div>
+    <!-- Membership Details Modal -->
+    <div class="modal fade" id="membershipModal" tabindex="-1" aria-labelledby="membershipModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius:15px; overflow:hidden;">
+
+                <div class="modal-body p-0">
+                    <div class="row g-0">
+
+                        <!-- LEFT IMAGE -->
+                        <div class="col-lg-6">
+                            <img id="modalImage" src="" alt="" style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+
+                        <!-- RIGHT DETAILS -->
+                        <div class="col-lg-6 p-4">
+
+                            <h4 id="modalName" class="mb-3"></h4>
+
+                            <p id="modalDescription" style="font-size:14px; color:#666;"></p>
+
+                            <h3 id="modalPrice" class="mt-3" style="color:#000;"></h3>
+
+                            <div class="mb-3 mt-4">
+                                <label>Startdatum</label>
+                                <input id="modalStartDate" type="date" class="form-control" />
+                            </div>
+
+                            <button class="btn btn-primary w-100 mt-3" id="modalButton">
+                                Välj medlemskap
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-close position-absolute end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+        </div>
+    </div>
+
 </section>
