@@ -3522,3 +3522,35 @@ ol {
 }
 
 
+<style >
+/* Make the timetable section fill most of the viewport and stay dark */
+.class-timetable-section {
+	background-color: #111; /* same dark as your theme */
+	padding-bottom: 40px; /* breathing room at bottom */
+}
+
+/* Ensure the table doesn’t collapse when few rows */
+.class-timetable.details-timetable {
+	min-height: 70vh; /* adjust as you like */
+}
+
+	/* Prevent layout jitter and force full width */
+	.class-timetable.details-timetable table {
+		width: 100%;
+		table-layout: fixed;
+	}
+
+	/* Empty cells stay dark */
+	.class-timetable.details-timetable td.blank-td {
+		background: transparent; /* or #0f0f0f to match */
+	}
+
+/* Make sure the page background itself is dark */
+html, body {
+	background-color: #111;
+}
+/* Light black background for session cells */
+.session-cell {
+	background-color: rgb(10, 10, 10); /* light black */
+}
+</style >

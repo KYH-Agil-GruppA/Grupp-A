@@ -24,6 +24,7 @@ public partial class ApplicationDbContext( DbContextOptions<ApplicationDbContext
     {
         builder.Entity<Session>().HasOne( e => e.Instructor );
         builder.Entity<Session>()
+
             .HasMany( e => e.Bookings )
             .WithMany( e => e.Bookings );
 
