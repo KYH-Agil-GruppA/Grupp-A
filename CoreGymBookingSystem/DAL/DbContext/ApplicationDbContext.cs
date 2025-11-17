@@ -16,6 +16,9 @@ public partial class ApplicationDbContext( DbContextOptions<ApplicationDbContext
     /// </summary>
     public DbSet<Session> Sessions { get; set; }
     public DbSet<Notification> Notifications { get; set; }
+    public DbSet<MembershipType> MembershipTypes { get; set; }
+
+
 
 
 
