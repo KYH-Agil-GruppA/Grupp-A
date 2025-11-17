@@ -46,12 +46,12 @@ namespace MainApp.Pages
                     Title = s.Title,
                     Description = s.Description,
                     Category = s.Category,
-                    DayOfWeek = s.DayOfWeek,
+                    DayOfWeek = s.StartTime.DayOfWeek.ToString(),
                     StartTime = s.StartTime,
                     EndTime = s.EndTime,
                     InstructorUserName = s.Instructor?.UserName,
                     MaxParticipants = s.MaxParticipants,
-                    CurrentBookings = s.CurrentBookings
+                    CurrentBookings = s.Bookings.Count
                 }).ToList();
             }
             else
