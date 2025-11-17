@@ -65,8 +65,12 @@
                     <table class="table table-borderless" style="color:#fff;">
                         <thead>
                             <tr>
-                                <th>Username</th>
+                                <th>FirstName</th>
+                                <th>LastName</th>
                                 <th>Email</th>
+                                <th>Address</th>
+                                  <th>City</th>
+                                <th>Country</th>
                                 <th>Roles</th>
                                 <th>Status</th>
                             </tr>
@@ -81,8 +85,12 @@
                                 foreach (var u in Model.LatestUsers)
                                 {
                                     <tr>
-                                        <td>@u.UserName</td>
+                                        <td>@u.FirstName</td>
+                                        <td>@u.LastName</td>
                                         <td>@u.Email</td>
+                                        <td>@u.Address</td>
+                                        <td>@u.City</td>
+                                        <td>@u.Country</td>
                                         <td>
                                             @foreach (var r in u.Roles)
                                             {

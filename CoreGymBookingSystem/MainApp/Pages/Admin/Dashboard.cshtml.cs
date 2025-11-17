@@ -28,6 +28,15 @@ public class DashboardModel : PageModel
     public class SimpleUserRow
     {
         public int Id { get; set; }
+        public string FirstName { get; set; } = "";
+        public string LastName { get; set; } = "";
+
+        public string Address { get; set; } = "";
+
+        public string City { get; set; } = "";
+
+        public string Country { get; set; } = "";
+
         public string UserName { get; set; } = "";
         public string Email { get; set; } = "";
         public string[] Roles { get; set; } = Array.Empty<string>();
@@ -55,6 +64,11 @@ public class DashboardModel : PageModel
             .Select(u => new SimpleUserRow
             {
                 Id = u.Id,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                Address = u.Address,
+                City = u.City,
+                Country = u.Country,
                 UserName = u.UserName ?? "(no username)",
                 Email = u.Email ?? "",
                 Roles = _db.UserRoles.AsNoTracking().Where(ur => ur.UserId == u.Id)
