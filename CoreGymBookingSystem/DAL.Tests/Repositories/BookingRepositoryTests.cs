@@ -22,7 +22,7 @@ public class BookingRepositoryTests : IDisposable
         _context = new ApplicationDbContext(options);
         _sut = new BookingRepository(_context);
 
-        // Seed initial data
+        // Seed initial data - ONLY sessions and users, NO bookings
         SeedDatabase();
     }
 
@@ -106,26 +106,11 @@ public class BookingRepositoryTests : IDisposable
 
         _context.Users.AddRange(instructor, user1, user2);
         _context.Sessions.AddRange(session1, session2, fullSession, pastSession);
-
-        // Add some bookings to the full session
-        var booking1 = new Booking
-        {
-            UserId = 2,
-            SessionId = 3,
-            BookingDate = DateTime.UtcNow,
-            Status = "Confirmed"
-        };
-
-        var booking2 = new Booking
-        {
-            UserId = 3,
-            SessionId = 3,
-            BookingDate = DateTime.UtcNow,
-            Status = "Confirmed"
-        };
-
-        _context.Bookings.AddRange(booking1, booking2);
         _context.SaveChanges();
+
+        // ⚠️ IMPORTANT: DO NOT seed bookings here!
+        // Tests should create their own bookings for proper isolation
+        // This prevents test cross-contamination
     }
 
     #region GetUserBookingsAsync Tests
@@ -517,7 +502,13 @@ public class BookingRepositoryTests : IDisposable
     [Fact]
     public async Task ValidateBookingAsync_WithFullSession_ReturnsInvalid()
     {
-        // Act - Session 3 is already full (2 bookings, 2 max)
+        // Arrange - Fill session 3 (max 2 participants)
+        var booking1 = new Booking { UserId = 2, SessionId = 3, BookingDate = DateTime.UtcNow, Status = "Confirmed" };
+        var booking2 = new Booking { UserId = 3, SessionId = 3, BookingDate = DateTime.UtcNow, Status = "Confirmed" };
+        _context.Bookings.AddRange(booking1, booking2);
+        await _context.SaveChangesAsync();
+
+        // Act - Try to book the full session
         var result = await _sut.ValidateBookingAsync(2, 3);
 
         // Assert
