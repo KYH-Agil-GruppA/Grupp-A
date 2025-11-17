@@ -214,7 +214,7 @@ public class BookingRepositoryTests : IDisposable
 
         // Assert
         result[0].Session!.Instructor.Should().NotBeNull();
-        result[0].Session.Instructor!.UserName.Should().Be("trainer1");
+        result[0].Session!.Instructor!.UserName.Should().Be("trainer1");
     }
 
     #endregion
@@ -625,7 +625,7 @@ public class BookingRepositoryTests : IDisposable
         }
 
         // Assert - All bookings should succeed (20 users)
-        results.Should().AllBe(true);
+        results.Should().AllSatisfy(r => r.Should().BeTrue());
 
         // Act - One more booking attempt
         var user23 = new User

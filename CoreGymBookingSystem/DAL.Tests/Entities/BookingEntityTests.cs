@@ -285,8 +285,8 @@ public class BookingEntityTests
         var afterCreation = DateTime.UtcNow;
 
         // Assert
-        booking.BookingDate.Should().BeGreaterThanOrEqualTo(beforeCreation);
-        booking.BookingDate.Should().BeLessThanOrEqualTo(afterCreation);
+        booking.BookingDate.Should().BeOnOrAfter(beforeCreation);
+        booking.BookingDate.Should().BeOnOrBefore(afterCreation);
     }
 
     [Fact]
@@ -337,8 +337,8 @@ public class BookingEntityTests
         };
 
         // Act & Assert
-        booking.UserId.Should().Equal(user.Id);
-        booking.SessionId.Should().Equal(session.Id);
+        booking.UserId.Should().Be(user.Id);
+        booking.SessionId.Should().Be(session.Id);
         booking.User!.UserName.Should().Be("Alice");
         booking.Session!.Title.Should().Be("Cardio");
     }
@@ -354,7 +354,7 @@ public class BookingEntityTests
 
         // Act & Assert
         booking1.User.Should().Be(booking2.User);
-        booking1.UserId.Should().Equal(booking2.UserId);
+        booking1.UserId.Should().Be(booking2.UserId);
     }
 
     [Fact]
@@ -368,7 +368,7 @@ public class BookingEntityTests
 
         // Act & Assert
         booking1.Session.Should().Be(booking2.Session);
-        booking1.SessionId.Should().Equal(booking2.SessionId);
+        booking1.SessionId.Should().Be(booking2.SessionId);
     }
 
     #endregion
@@ -396,10 +396,10 @@ public class BookingEntityTests
         };
 
         // Act & Assert
-        booking1.Id.Should().Equal(booking2.Id);
-        booking1.UserId.Should().Equal(booking2.UserId);
-        booking1.SessionId.Should().Equal(booking2.SessionId);
-        booking1.Status.Should().Equal(booking2.Status);
+        booking1.Id.Should().Be(booking2.Id);
+        booking1.UserId.Should().Be(booking2.UserId);
+        booking1.SessionId.Should().Be(booking2.SessionId);
+        booking1.Status.Should().Be(booking2.Status);
     }
 
     [Fact]
