@@ -9,5 +9,8 @@
         <p>@m.Description</p>
         <h3>@m.Price kr</h3>
         <a asp-page="MembershipDetails" asp-route-id="@m.Id" class="btn btn-primary">Choose</a>
+        <a asp-page="Signup" asp-route-id="@m.Id" class="btn btn-primary">
+            Choose
+        </a>
     </div>
 }
