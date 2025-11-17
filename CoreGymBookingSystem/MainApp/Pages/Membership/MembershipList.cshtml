@@ -90,5 +90,20 @@
             </div>
         </div>
     </div>
+    @section Scripts
+    {
+        <script>
+            function openMembershipModal(name, description, price, imageUrl) {
 
+                document.getElementById("modalName").innerText = name;
+                document.getElementById("modalDescription").innerText = description;
+                document.getElementById("modalPrice").innerText = price + " kr";
+                document.getElementById("modalImage").src = imageUrl;
+
+                var modal = new bootstrap.Modal(document.getElementById('membershipModal'));
+                modal.show();
+            }
+        </script>
+
+    }
 </section>
