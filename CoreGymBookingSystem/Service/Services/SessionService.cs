@@ -71,7 +71,7 @@ namespace Service.Services
                 .Where(s => s.Category != null && s.Category.Equals(category, StringComparison.OrdinalIgnoreCase))
                 .Select(s => new SessionsDto
                 {
-                 
+                    Id = s.Id,
                     Title = s.Title,
                     Description = s.Description,
                     Category = s.Category,
