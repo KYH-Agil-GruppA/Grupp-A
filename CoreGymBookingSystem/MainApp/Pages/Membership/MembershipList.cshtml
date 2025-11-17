@@ -35,8 +35,11 @@
                             <li>@m.Description</li>
                         </ul>
 
-                        <a asp-page="MembershipDetails" asp-route-id="@m.Id"
-                           class="primary-btn pricing-btn">Choose</a>
+                        <a href="javascript:void(0)"
+                           class="primary-btn pricing-btn"
+                           onclick="openMembershipModal('@m.Name', '@m.Description', '@m.Price', '@m.ImageUrl')">
+                            Choose
+                        </a>
 
                         <a href="#" class="thumb-icon">
                             <i class="fa fa-picture-o"></i>
