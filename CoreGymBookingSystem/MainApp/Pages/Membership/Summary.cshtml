@@ -1,0 +1,58 @@
+﻿@page
+@model MainApp.Pages.Membership.SummaryModel
+@{
+    Layout = "_Gymlayout";
+}
+
+<section class="checkout-section spad">
+    <div class="container">
+
+        <!-- Membership Info -->
+        <div class="row mb-5">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card p-4 shadow-lg">
+
+                    <h4 class="mb-3 text-center" style="font-weight:700; color:#ff6a00;">
+                        Your Membership Summary
+                    </h4>
+
+                    <div class="d-flex align-items-center">
+                        <img src="@Model.Info.ImageUrl"
+                             style="width:120px; border-radius:8px; margin-right:20px;" />
+
+                        <div>
+                            <h5>@Model.Info.MembershipName</h5>
+                            <p class="text-muted">@Model.Info.Description</p>
+                            <h4 style="color:#ff6a00;">@Model.Info.Price kr</h4>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- User Info -->
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card p-5 shadow-lg">
+
+                    <h4 class="mb-4 text-center" style="font-weight:700;">Your Information</h4>
+
+                    <ul class="list-group">
+                        <li class="list-group-item"><strong>Name:</strong> @Model.Info.FirstName @Model.Info.LastName</li>
+                        <li class="list-group-item"><strong>Email:</strong> @Model.Info.Email</li>
+                        <li class="list-group-item"><strong>Address:</strong> @Model.Info.Address</li>
+                        <li class="list-group-item"><strong>Phone:</strong> @Model.Info.Phone</li>
+                    </ul>
+
+                    <a href="/Membership/Success"
+                       class="btn btn-primary w-100 mt-4"
+                       style="background:#ff6a00; border:none; padding:12px; font-size:18px;">
+                        Confirm Purchase
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
