@@ -3,7 +3,7 @@ using DAL.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Service.Interfaces;
+using Services.Interfaces;
 
 namespace MainApp.Pages;
 
