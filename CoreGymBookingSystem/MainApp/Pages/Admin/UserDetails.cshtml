@@ -1,0 +1,59 @@
+﻿@page "{id:int}"
+@model WebApp.Pages.Admin.UserDetailsModel
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<section class="class-timetable-section admin-dashboard-section">
+    <div class="container admin-dashboard-container">
+
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h3 class="admin-card-title">
+                    @Model.User.FirstName @Model.User.LastName
+                </h3>
+                <small class="admin-card-subtitle">
+                    Profile & details
+                </small>
+            </div>
+
+            <div class="admin-card-body">
+
+                <dl class="row">
+                    <dt class="col-sm-3">User ID</dt>
+                    <dd class="col-sm-9">@Model.User.Id</dd>
+
+                    <dt class="col-sm-3">Username</dt>
+                    <dd class="col-sm-9">@Model.User.UserName</dd>
+
+                    <dt class="col-sm-3">Email</dt>
+                    <dd class="col-sm-9">@Model.User.Email</dd>
+
+                    <dt class="col-sm-3">Address</dt>
+                    <dd class="col-sm-9">
+                        @Model.User.Address<br />
+                        @Model.User.City, @Model.User.Country
+                    </dd>
+
+                    <dt class="col-sm-3">Roles</dt>
+                    <dd class="col-sm-9">
+                        @foreach (var role in Model.User.Roles)
+                        {
+                            <span class="badge bg-secondary me-1">@role</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-3">Locked out</dt>
+                    <dd class="col-sm-9">
+                        @(Model.User.IsLocked ? "Yes" : "No")
+                    </dd>
+                </dl>
+
+                <a asp-page="/Admin/Dashboard" class="btn btn-outline-light">
+                    <i class="fa fa-arrow-left me-1"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+    </div>
+</section>
