@@ -7,53 +7,192 @@
 <section class="class-timetable-section admin-dashboard-section">
     <div class="container admin-dashboard-container">
 
-        <div class="admin-card">
-            <div class="admin-card-header">
-                <h3 class="admin-card-title">
-                    @Model.User.FirstName @Model.User.LastName
-                </h3>
-                <small class="admin-card-subtitle">
-                    Profile & details
-                </small>
+        <!-- PAGE HEADER -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="admin-dashboard-title mb-1">
+                    <i class="fa-solid fa-dumbbell me-2"></i>
+                    Member Profile
+                </h2>
+                <p class="admin-dashboard-subtitle mb-0">
+                    Overview of member information, role access and gym status.
+                </p>
             </div>
 
-            <div class="admin-card-body">
-
-                <dl class="row">
-                    <dt class="col-sm-3">User ID</dt>
-                    <dd class="col-sm-9">@Model.User.Id</dd>
-
-                    <dt class="col-sm-3">Username</dt>
-                    <dd class="col-sm-9">@Model.User.UserName</dd>
-
-                    <dt class="col-sm-3">Email</dt>
-                    <dd class="col-sm-9">@Model.User.Email</dd>
-
-                    <dt class="col-sm-3">Address</dt>
-                    <dd class="col-sm-9">
-                        @Model.User.Address<br />
-                        @Model.User.City, @Model.User.Country
-                    </dd>
-
-                    <dt class="col-sm-3">Roles</dt>
-                    <dd class="col-sm-9">
-                        @foreach (var role in Model.User.Roles)
-                        {
-                            <span class="badge bg-secondary me-1">@role</span>
-                        }
-                    </dd>
-
-                    <dt class="col-sm-3">Locked out</dt>
-                    <dd class="col-sm-9">
-                        @(Model.User.IsLocked ? "Yes" : "No")
-                    </dd>
-                </dl>
-
-                <a asp-page="/Admin/Dashboard" class="btn btn-outline-light">
+            <div>
+                <a asp-page="/Admin/Dashboard"
+                   class="btn btn-outline-light">
                     <i class="fa fa-arrow-left me-1"></i> Back to Dashboard
                 </a>
             </div>
         </div>
 
+        <div class="row g-4">
+
+            <!-- LEFT SIDE: PROFILE SUMMARY CARD -->
+            <div class="col-lg-4">
+                <div class="admin-card h-100">
+                    <div class="admin-card-header text-center">
+                        <div class="mb-3">
+                            <!-- Avatar Initials -->
+                            <div class="rounded-circle d-inline-flex justify-content-center align-items-center"
+                                 style="width: 72px; height: 72px; background: rgba(255,255,255,0.06); font-size: 1.8rem;">
+                                @Model.User.FirstName?.FirstOrDefault().ToString().ToUpper()
+                                @Model.User.LastName?.FirstOrDefault().ToString().ToUpper()
+                            </div>
+                        </div>
+
+                        <h3 class="admin-card-title mb-1">
+                            @Model.User.FirstName @Model.User.LastName
+                        </h3>
+                        <small class="admin-card-subtitle d-block mb-2">
+                            @Model.User.UserName
+                        </small>
+
+                        <!-- Roles -->
+                        <div class="mb-2">
+                            @foreach (var role in Model.User.Roles)
+                            {
+                                <span class="badge rounded-pill bg-secondary me-1">@role</span>
+                            }
+                        </div>
+
+                        <!-- Account status -->
+                        <span class="badge @(Model.User.IsLocked ? "bg-danger" : "bg-success")">
+                            @(Model.User.IsLocked ? "Locked Account" : "Active Account")
+                        </span>
+                    </div>
+
+                    <div class="admin-card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <i class="fa-regular fa-envelope me-2"></i>
+                                <strong>Email:</strong><br />
+                                <span class="text-muted">@Model.User.Email</span>
+                            </li>
+                            <li class="mb-2">
+                                <i class="fa-regular fa-id-badge me-2"></i>
+                                <strong>User ID:</strong><br />
+                                <span class="text-muted">@Model.User.Id</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT SIDE: DETAILS CARD (bank-style layout) -->
+            <div class="col-lg-8">
+                <div class="card admin-card h-100">
+                    <div class="card-header admin-card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="admin-card-title mb-1">Member Details</h3>
+                            <small class="admin-card-subtitle">
+                                Personal details and gym membership overview
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="card-body admin-card-body">
+
+                        <!-- ADDRESS SECTION -->
+                        <div class="mb-4">
+                            <h5 class="text-uppercase small text-secondary mb-2">
+                                <i class="fa-regular fa-map me-2"></i>Address
+                            </h5>
+                            <div class="p-3 rounded-3"
+                                 style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);">
+                                <div class="row">
+                                    <div class="col-md-6 mb-2">
+                                        <strong>Street</strong><br />
+                                        <span class="text-muted">
+                                            @(!string.IsNullOrWhiteSpace(Model.User.Address) ? Model.User.Address : "Not specified")
+                                        </span>
+                                    </div>
+                                    <div class="col-md-3 mb-2">
+                                        <strong>City</strong><br />
+                                        <span class="text-muted">
+                                            @(!string.IsNullOrWhiteSpace(Model.User.City) ? Model.User.City : "Not specified")
+                                        </span>
+                                    </div>
+                                    <div class="col-md-3 mb-2">
+                                        <strong>Country</strong><br />
+                                        <span class="text-muted">
+                                            @(!string.IsNullOrWhiteSpace(Model.User.Country) ? Model.User.Country : "Not specified")
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- GYM ACCOUNT STATUS -->
+                        <div class="mb-4">
+                            <h5 class="text-uppercase small text-secondary mb-2">
+                                <i class="fa-solid fa-person-running me-2"></i>Gym Account Status
+                            </h5>
+
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <div class="p-3 rounded-3 h-100"
+                                         style="background: rgba(0, 255, 170, 0.04); border: 1px solid rgba(0,255,170,0.2);">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="small text-uppercase text-secondary">Account</span>
+                                            <i class="fa-regular fa-circle-check"></i>
+                                        </div>
+                                        <div class="fw-semibold">
+                                            @(Model.User.IsLocked ? "Suspended / Locked" : "Active Member")
+                                        </div>
+                                        <small class="text-muted">
+                                            Admins can change user status from the user management panel.
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <div class="p-3 rounded-3 h-100"
+                                         style="background: rgba(255, 215, 0, 0.04); border: 1px solid rgba(255,215,0,0.2);">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="small text-uppercase text-secondary">Roles</span>
+                                            <i class="fa-solid fa-user-gear"></i>
+                                        </div>
+                                        <div class="fw-semibold">
+                                            @if (Model.User.Roles.Any())
+                                            {
+                                                @string.Join(", ", Model.User.Roles)
+                                            }
+                                            else
+                                            {
+                                                @:No roles assigned
+                                            }
+                                        </div>
+                                        <small class="text-muted">
+                                            Roles define access levels for admin, trainers and members.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FUTURE FEATURE: BOOKINGS -->
+                        
+                        <div>
+                            <h5 class="text-uppercase small text-secondary mb-2">
+                                <i class="fa-regular fa-calendar-check me-2"></i>Upcoming Bookings
+                            </h5>
+                            <p class="text-muted mb-0">
+                                You can list the member’s booked classes here.
+                            </p>
+                        </div>
+                        
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 </section>
+
+@section Scripts {
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}
