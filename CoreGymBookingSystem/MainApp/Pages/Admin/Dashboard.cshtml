@@ -141,13 +141,26 @@
                                                 }
                                             </td>
                                             <td class="text-center">
-                                                <a asp-page="/Admin/UserDetails"
+                                                @{
+                                                    var rolesLower = (u.Roles ?? Array.Empty<string>())
+                                                    .Select(r => r?.ToLowerInvariant())
+                                                    .ToArray();
+
+                                                    var profilePage = rolesLower.Contains("admin")
+                                                    ? "/Admin/AdminDetails"
+                                                    : rolesLower.Contains("trainer")
+                                                    ? "/Admin/TrainerDetails"
+                                                    : "/Admin/UserDetails";
+                                                }
+
+                                                <a asp-page="@profilePage"
                                                    asp-route-id="@u.Id"
                                                    class="btn btn-sm btn-outline-info"
                                                    title="View Profile">
                                                     <i class="fa fa-info-circle"></i>
                                                 </a>
                                             </td>
+
                                         </tr>
                                     }
                                 }

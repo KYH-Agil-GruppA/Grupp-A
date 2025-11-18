@@ -1,0 +1,64 @@
+﻿@page "{id:int}"
+@model WebApp.Pages.Admin.TrainerDetailsModel
+@{
+    ViewData["Title"] = "Trainer Profile";
+}
+
+<section class="class-timetable-section admin-dashboard-section">
+    <div class="container admin-dashboard-container">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="admin-dashboard-title mb-1">
+                    <i class="fa-solid fa-dumbbell me-2"></i>
+                    Trainer Profile
+                </h2>
+                <p class="admin-dashboard-subtitle mb-0">
+                    View trainer information, specialties and contact details.
+                </p>
+            </div>
+
+            <div>
+                <a asp-page="/Admin/Dashboard" class="btn btn-outline-light">
+                    <i class="fa fa-arrow-left me-1"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <div class="admin-card">
+            <div class="admin-card-header text-center">
+                <h3 class="admin-card-title mb-1">
+                    @Model.User.FirstName @Model.User.LastName
+                </h3>
+                <small class="admin-card-subtitle d-block mb-2">
+                    @Model.User.UserName
+                </small>
+
+                <div class="mb-2">
+                    @foreach (var role in Model.User.Roles)
+                    {
+                        <span class="role-badge">@role</span>
+                    }
+                </div>
+            </div>
+
+            <div class="admin-card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">User ID</dt>
+                    <dd class="col-sm-9">@Model.User.Id</dd>
+
+                    <dt class="col-sm-3">Email</dt>
+                    <dd class="col-sm-9">@Model.User.Email</dd>
+
+                    <dt class="col-sm-3">Address</dt>
+                    <dd class="col-sm-9">
+                        @Model.User.Address<br />
+                        @Model.User.City, @Model.User.Country
+                    </dd>
+                </dl>
+
+
+            </div>
+        </div>
+    </div>
+</section>
