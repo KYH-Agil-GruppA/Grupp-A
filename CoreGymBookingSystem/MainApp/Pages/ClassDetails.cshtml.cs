@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Service.Interfaces;
-using Services.Interfaces;
 
 namespace MainApp.Pages;
 
@@ -26,12 +25,13 @@ public class ClassDetailsModel : PageModel
 
     public async Task<IActionResult> OnGetAsync(string? filter)
     {
-        Filter = string.IsNullOrWhiteSpace(filter) ? "all" : filter.ToLowerInvariant();
-
-        var allSessions = await _sessionService.GetAllSessionsAsync();
+        Filter = string.IsNullOrWhiteSpace(filter) ? "all" : filter!.ToLowerInvariant();
 
         if (Filter == "all")
         {
+            // Hämta alla sessioner och mappa till DTO (full kontroll över projektionen)
+            var allSessions = await _sessionService.GetAllSessionsAsync();
+
             Sessions = allSessions.Select(s => new SessionsDto
             {
                 Id = s.Id,
@@ -48,6 +48,7 @@ public class ClassDetailsModel : PageModel
         }
         else
         {
+            // Hämta redan färdiga DTO:er per kategori (bättre prestanda om servicen gör projektion i DB)
             Sessions = await _sessionService.GetSessionsByCategoryAsync(Filter);
         }
 

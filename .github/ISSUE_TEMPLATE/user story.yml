@@ -1,0 +1,19 @@
+name: Create a new user story
+description: Feature described from the end-user perspective.
+type: User Story
+body:
+  - type: textarea
+    id: feature
+    attributes:
+      label: Feature described from the end-user perspective.
+      placeholder: As a member, I want to...
+    validations:
+      required: true
+  - type: textarea
+    id: criteria
+    attributes:
+      label: Acceptance criteria.
+      placeholder: There needs to be...
+      description: Write tasks in sub-issues.
+    validations:
+      required: true

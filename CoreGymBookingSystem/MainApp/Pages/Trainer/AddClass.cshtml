@@ -1,0 +1,203 @@
+﻿@page
+@model MainApp.Pages.Trainer.AddClassModel
+@{
+    Layout = "_GymLayout";
+    ViewData["Title"] = "Add Class";
+}
+
+<section class="class-timetable-section spad" style="min-height:100vh; padding-top:140px;">
+    <div class="container" style="max-width:800px; background-color:#111; border-radius:12px; padding:40px; box-shadow:0 0 10px rgba(0,0,0,0.4); color:#fff;">
+        <div class="text-center mb-5">
+            <h2 class="text-uppercase" style="color:#f36100;">Add a New Class</h2>
+      
+        </div>
+
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <!-- TITLE -->
+            <div class="mb-3">
+                <label style="color:#f36100;" class="form-label fw-bold text-uppercase">Title</label>
+                <input asp-for="Vm.Create.Title" class="form-control bg-dark text-light border-secondary" />
+                <span asp-validation-for="Vm.Create.Title" class="text-danger"></span>
+            </div>
+
+            <!-- DESCRIPTION -->
+            <div class="mb-3">
+                <label style="color:#f36100;" class="form-label fw-bold text-uppercase">Description</label>
+                <textarea asp-for="Vm.Create.Description" rows="3" class="form-control bg-dark text-light border-secondary"></textarea>
+            </div>
+
+            <!-- START + END TIME -->
+            <div class="row">
+
+                <!-- START TIME -->
+                <div class="col-md-6 mb-3">
+                    <label style="color:#f36100;" class="form-label fw-bold text-uppercase">Start Time</label>
+
+                    <input type="date" id="start-date" required class="form-control bg-dark text-light border-secondary" />
+
+                    <select id="start-hour" required class="form-select bg-dark text-light border-secondary mt-2">
+                        <option value="">Hour</option>
+                    </select>
+
+                    <select id="start-minute" required class="form-select bg-dark text-light border-secondary mt-2">
+                        <option value="">Minute</option>
+                        <option value="00">00</option>
+                        <option value="15">15</option>
+                        <option value="30">30</option>
+                        <option value="45">45</option>
+                    </select>
+
+                    <input asp-for="Vm.Create.StartTime" type="hidden" id="hidden-start" />
+                    <span asp-validation-for="Vm.Create.StartTime" class="text-danger"></span>
+                </div>
+
+                <!-- END TIME -->
+                <div class="col-md-6 mb-3">
+                    <label style="color:#f36100;" class="form-label fw-bold text-uppercase">End Time</label>
+
+                    <input type="date" id="end-date" required class="form-control bg-dark text-light border-secondary" />
+
+                    <select id="end-hour" required class="form-select bg-dark text-light border-secondary mt-2">
+                        <option value="">Hour</option>
+                    </select>
+
+                    <select id="end-minute" required class="form-select bg-dark text-light border-secondary mt-2">
+                        <option value="">Minute</option>
+                        <option value="00">00</option>
+                        <option value="15">15</option>
+                        <option value="30">30</option>
+                        <option value="45">45</option>
+                    </select>
+
+                    <input asp-for="Vm.Create.EndTime" type="hidden" id="hidden-end" />
+                    <span asp-validation-for="Vm.Create.EndTime" class="text-danger"></span>
+                </div>
+            </div>
+
+            <!-- MAX PARTICIPANTS -->
+            <div class="mb-3">
+                <label style="color:#f36100;" class="form-label fw-bold text-uppercase">Max Participants</label>
+                <input asp-for="Vm.Create.MaxParticipants"
+                       type="number"
+                       min="1"
+                       step="1"
+                       required
+                       class="form-control bg-dark text-light border-secondary" />
+                <span asp-validation-for="Vm.Create.MaxParticipants" class="text-danger"></span>
+            </div>
+
+            <!-- CATEGORY -->
+            <div class="mb-4">
+                <label style="color:#f36100;" class="form-label fw-bold text-uppercase">Category</label>
+                <select asp-for="Vm.Create.Category" required class="form-select bg-dark text-light border-secondary">
+                    <option value="">-- Select Category --</option>
+                    <option value="Yoga">Yoga</option>
+                    <option value="Running">Running</option>
+                    <option value="Weightloss">Weightloss</option>
+                    <option value="Cardio">Cardio</option>
+                    <option value="Bodybuilding">Bodybuilding</option>
+                    <option value="Nutrition">Nutrition</option>
+                </select>
+                <span asp-validation-for="Vm.Create.Category" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a asp-page="/Trainer/Dashboard" class="btn btn-outline-light px-4 py-2">← Back</a>
+                <button type="submit" class="btn btn-primary px-4 py-2" style="background-color:#f36100; border:none;">
+                    Save Class
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // Cached IDs
+            const startDate = document.getElementById("start-date");
+            const endDate = document.getElementById("end-date");
+            const startHour = document.getElementById("start-hour");
+            const startMinute = document.getElementById("start-minute");
+            const endHour = document.getElementById("end-hour");
+            const endMinute = document.getElementById("end-minute");
+            const hiddenStart = document.getElementById("hidden-start");
+            const hiddenEnd = document.getElementById("hidden-end");
+
+            // === Disable past dates ===
+            const today = new Date().toISOString().split("T")[0];
+            startDate.min = today;
+            endDate.min = today;
+
+            // ==== Fill hours ====
+            function fillHours(select) {
+                for (let h = 0; h < 24; h++) {
+                    const hh = h.toString().padStart(2, '0');
+                    select.innerHTML += `<option value="${hh}">${hh}</option>`;
+                }
+            }
+
+            fillHours(startHour);
+            fillHours(endHour);
+
+            // ==== Build hidden START ====
+            function updateHiddenStart() {
+                let d = startDate.value;
+                let h = startHour.value;
+                let m = startMinute.value;
+                if (d && h && m)
+                    hiddenStart.value = `${d}T${h}:${m}`;
+            }
+
+            // ==== Build hidden END ====
+            function updateHiddenEnd() {
+                let d = endDate.value;
+                let h = endHour.value;
+                let m = endMinute.value;
+                if (d && h && m)
+                    hiddenEnd.value = `${d}T${h}:${m}`;
+            }
+
+            // ==== Sync end date = start date ====
+            startDate.addEventListener("change", () => {
+                endDate.value = startDate.value;
+                endMinute.value = "00";
+                updateHiddenStart();
+                updateHiddenEnd();
+            });
+
+            // Auto minute default
+            startHour.addEventListener("change", () => {
+                if (!startMinute.value) startMinute.value = "00";
+                updateHiddenStart();
+            });
+
+            endHour.addEventListener("change", () => {
+                if (!endMinute.value) endMinute.value = "00";
+                updateHiddenEnd();
+            });
+
+            [startDate, startHour, startMinute].forEach(x => x.addEventListener("change", updateHiddenStart));
+            [endDate, endHour, endMinute].forEach(x => x.addEventListener("change", updateHiddenEnd));
+
+            // Prevent negative participants
+            const mp = document.querySelector('[name="Vm.Create.MaxParticipants"]');
+            mp.addEventListener("input", () => {
+                if (mp.value < 1) mp.value = 1;
+            });
+
+            // Prevent missing minutes
+            document.querySelector("form").addEventListener("submit", function (evt) {
+                if (!startMinute.value || !endMinute.value) {
+                    evt.preventDefault();
+                    alert("Please select start and end minutes.");
+                }
+            });
+        });
+    </script>
+}

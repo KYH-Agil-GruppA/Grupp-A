@@ -124,12 +124,12 @@
 
 
 
-                                else
+                                else if (User.IsInRole("Trainer"))
                                 {
                                     <li class="active"><a asp-page="/Index">Home</a></li>
-                                    <li><a asp-page="/Services">Services</a></li>
-                                    <li><a asp-page="/Team">Our Team</a></li>
-                                    <li><a asp-page="/Contact">Contact</a></li>
+                                   
+                                    <li><a asp-page="/Trainer/Dashboard">Dashboard</a></li>
+                                   
 
                                 }
                             }

@@ -9,16 +9,15 @@ namespace DAL.DbContext;
 /// Wrapper for the application's database.
 /// </summary>
 /// <param name="options">The options to be used by a <see cref="ApplicationDbContext"/>.</param>
-public partial class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<User, IdentityRole<int>, int>(options)
+public partial class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    : IdentityDbContext<User, IdentityRole<int>, int>(options)
 {
     /// <summary>
     /// Set of all tracked sessions.
     /// </summary>
-    public DbSet<Session> Sessions { get; set; }
-
-    public DbSet<Booking> Bookings { get; set; }
-
-    public DbSet<Notification> Notifications { get; set; }
+    public DbSet<Session> Sessions { get; set; } = null!;
+    public DbSet<Booking> Bookings { get; set; } = null!;
+    public DbSet<Notification> Notifications { get; set; } = null!;
 
     /// <inheritdoc cref="Microsoft.EntityFrameworkCore.DbContext.OnModelCreating"/>
     protected override void OnModelCreating(ModelBuilder builder)
@@ -28,28 +27,26 @@ public partial class ApplicationDbContext(DbContextOptions<ApplicationDbContext>
         // ============================================
         // SESSION ENTITY CONFIGURATION
         // ============================================
-
         builder.Entity<Session>(entity =>
         {
             entity.HasKey(e => e.Id);
 
             // Session -> Instructor (Many-to-One)
-            // En trainer kan instruera många sessioner
+            // One instructor can teach many sessions
             entity.HasOne(s => s.Instructor)
                 .WithMany(u => u.InstructedSessions)
                 .HasForeignKey(s => s.InstructorId)
                 .OnDelete(DeleteBehavior.SetNull);
-            // ^ Om trainer raderas, sätt InstructorId = null
+            // If instructor is deleted â†’ set InstructorId = null
 
             // Session -> Bookings (One-to-Many)
-            // En session kan ha många bokningar
+            // One session can have many bookings
             entity.HasMany(s => s.Bookings)
                 .WithOne(b => b.Session)
                 .HasForeignKey(b => b.SessionId)
                 .OnDelete(DeleteBehavior.Cascade);
-            // ^ Om session raderas, radera alla dess bookings
+            // If session is deleted â†’ delete all its bookings
 
-            // Properties
             entity.Property(s => s.Title)
                 .IsRequired()
                 .HasMaxLength(200);
@@ -60,7 +57,7 @@ public partial class ApplicationDbContext(DbContextOptions<ApplicationDbContext>
             entity.Property(s => s.Category)
                 .HasMaxLength(50);
 
-            // Index för performance
+            // Indexes for performance
             entity.HasIndex(s => s.InstructorId);
             entity.HasIndex(s => s.Category);
         });
@@ -68,77 +65,67 @@ public partial class ApplicationDbContext(DbContextOptions<ApplicationDbContext>
         // ============================================
         // BOOKING ENTITY CONFIGURATION
         // ============================================
-
         builder.Entity<Booking>(entity =>
         {
             entity.HasKey(e => e.Id);
 
             // Booking -> Session (Many-to-One)
-            // Många bokningar pekar på en session
             entity.HasOne(b => b.Session)
                 .WithMany(s => s.Bookings)
                 .HasForeignKey(b => b.SessionId)
                 .OnDelete(DeleteBehavior.Cascade);
-            // ^ Om session raderas, radera denna booking
+            // If session is deleted â†’ delete this booking
 
             // Booking -> User (Many-to-One)
-            // Många bokningar pekar på en user
             entity.HasOne(b => b.User)
                 .WithMany(u => u.Bookings)
                 .HasForeignKey(b => b.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
-            // ^ Om user raderas, radera denna booking
+            // If user is deleted â†’ delete this booking
 
-            // Properties
             entity.Property(b => b.BookingDate)
                 .HasDefaultValueSql("GETUTCDATE()");
-            // ^ Automatisk timestamp vid insert
+            // Automatic UTC timestamp on insert
 
             entity.Property(b => b.Status)
                 .HasMaxLength(50)
                 .HasDefaultValue("Confirmed");
 
-            // VIKTIGT: Unique constraint - förhindrar duplicates
-            // En user kan bara boka en session EN GÅNG
+            // CRITICAL: Prevent duplicate bookings
+            // A user can only book a session ONCE
             entity.HasIndex(b => new { b.UserId, b.SessionId })
-                .IsUnique(true)
+                .IsUnique()
                 .HasDatabaseName("UX_Bookings_UserId_SessionId");
 
-            // Index för performance
+            // Performance indexes
             entity.HasIndex(b => b.UserId);
             entity.HasIndex(b => b.SessionId);
             entity.HasIndex(b => b.BookingDate);
         });
 
         // ============================================
-        // USER ENTITY CONFIGURATION
+        // USER ENTITY CONFIGURATION (optional but explicit)
         // ============================================
-
         builder.Entity<User>(entity =>
         {
             // User -> Bookings (One-to-Many)
-            // En user kan ha många bokningar
             entity.HasMany(u => u.Bookings)
                 .WithOne(b => b.User)
                 .HasForeignKey(b => b.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
-            // ^ Om user raderas, radera alla dess bookings
-            // ^ REDAN KONFIGURERAD FRÅN BOOKING-SIDAN
+            // If user is deleted â†’ delete all their bookings
 
             // User -> InstructedSessions (One-to-Many)
-            // En trainer kan instruera många sessioner
             entity.HasMany(u => u.InstructedSessions)
                 .WithOne(s => s.Instructor)
                 .HasForeignKey(s => s.InstructorId)
                 .OnDelete(DeleteBehavior.SetNull);
-            // ^ Om trainer raderas, sessioner får null instructor
-            // ^ REDAN KONFIGURERAD FRÅN SESSION-SIDAN
+            // If instructor is deleted â†’ sessions get null instructor
         });
 
         // ============================================
-        // NOTIFICATION ENTITY CONFIGURATION (om du använder den)
+        // NOTIFICATION ENTITY CONFIGURATION
         // ============================================
-
         builder.Entity<Notification>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -154,7 +141,7 @@ public partial class ApplicationDbContext(DbContextOptions<ApplicationDbContext>
             entity.Property(n => n.Type)
                 .HasMaxLength(50);
 
-            // Index för performance
+            // Index for performance
             entity.HasIndex(n => n.CreatedAt);
         });
     }

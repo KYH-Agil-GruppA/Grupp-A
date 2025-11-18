@@ -1,0 +1,10 @@
+name: Create a new task
+description: A specific piece of work.
+type: Task
+body:
+  - type: textarea
+    id: criteria
+    attributes:
+      label: How to do it.
+    validations:
+      required: true
