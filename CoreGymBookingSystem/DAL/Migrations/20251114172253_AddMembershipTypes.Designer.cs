@@ -4,6 +4,7 @@ using DAL.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251114172253_AddMembershipTypes")]
+    partial class AddMembershipTypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,32 +50,6 @@ namespace DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MembershipTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Unlimited access to all classes and gym facilities.",
-                            ImageUrl = "/Gym_Tem/img/memberships/adult.jpg",
-                            Name = "Adult Membership",
-                            Price = 399m
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Discounted membership for students with valid ID.",
-                            ImageUrl = "/Gym_Tem/img/memberships/student.jpg",
-                            Name = "Student Membership",
-                            Price = 299m
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Full gym access with flexible hours for seniors aged 65+.",
-                            ImageUrl = "/Gym_Tem/img/memberships/senior.jpg",
-                            Name = "Senior Membership",
-                            Price = 249m
-                        });
                 });
 
             modelBuilder.Entity("DAL.Entities.Notification", b =>
