@@ -25,87 +25,103 @@
 <section class="contact-section spad">
     <div class="container">
 
-        <!-- Top stats -->
-        <div class="row mb-4">
-            <div class="col-lg-4">
-                <div class="contact-widget">
-                    <div class="cw-text">
-                        <i class="fa fa-users"></i>
-                        <p><strong>Total Users</strong></p>
-                        <p>@Model.TotalUsers users</p>
-                    </div>
+        <div class="card mt-4 shadow-lg">
+            <!-- HEADER -->
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-0">Gym Overview</h3>
+                    <small class="text-muted">Summary of members & trainers</small>
                 </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="contact-widget">
-                    <div class="cw-text">
-                        <i class="fa fa-id-badge"></i>
-                        <p><strong>Members</strong></p>
-                        <p>@Model.MembersCount users</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="contact-widget">
-                    <div class="cw-text">
-                        <i class="fa fa-user"></i>
-                        <p><strong>Trainers</strong></p>
-                        <p>@Model.TrainersCount users</p>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Latest users (Member/Trainer) -->
-        <div class="class-details-text">
-            <div class="cd-single-item">
-                <h4 class="mb-3">Latest Members & Trainers</h4>
+                <div class="d-flex gap-2">
+                    <a asp-page="/Admin/Users/Index" class="btn btn-outline-light btn-sm">
+                        <i class="fa fa-users-cog me-1"></i> Manage Users
+                    </a>
+                    <a asp-page="/Admin/Roles/Index" class="btn btn-outline-light btn-sm">
+                        <i class="fa fa-id-badge me-1"></i> Manage Roles
+                    </a>
+                </div>
+            </div>
 
-                <div class="table-responsive">
-                    <table class="table table-borderless" style="color:#fff;">
-                        <thead>
+            <!-- BODY -->
+            <div class="card-body">
+
+                <!-- TOP STATS -->
+                <div class="row text-center mb-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="p-3 border rounded-3 h-100">
+                            <i class="fa fa-users fa-2x mb-2"></i>
+                            <h6 class="mb-1">Total Users</h6>
+                            <span class="fw-bold fs-5">@Model.TotalUsers</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <div class="p-3 border rounded-3 h-100">
+                            <i class="fa fa-id-badge fa-2x mb-2"></i>
+                            <h6 class="mb-1">Members</h6>
+                            <span class="fw-bold fs-5">@Model.MembersCount</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <div class="p-3 border rounded-3 h-100">
+                            <i class="fa fa-dumbbell fa-2x mb-2"></i>
+                            <h6 class="mb-1">Trainers</h6>
+                            <span class="fw-bold fs-5">@Model.TrainersCount</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LATEST USERS -->
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h4 class="mb-0">Latest Members & Trainers</h4>
+                    <small class="text-muted">
+                        Showing the most recently created users with roles Member/Trainer
+                    </small>
+                </div>
+
+                <div class="table-responsive mt-2">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-dark">
                             <tr>
-                                <th>FirstName</th>
-                                <th>LastName</th>
-                                <th>Email</th>
-                                <th>Address</th>
-                                  <th>City</th>
-                                <th>Country</th>
+                                <th>ID</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
                                 <th>Roles</th>
-                                <th>Status</th>
+                                <th class="text-center">Info</th>
                             </tr>
                         </thead>
                         <tbody>
                             @if (!Model.LatestUsers.Any())
                             {
-                                <tr><td colspan="4" class="text-center"><em>No users found.</em></td></tr>
+                                <tr>
+                                    <td colspan="5" class="text-center">
+                                        <em>No users found.</em>
+                                    </td>
+                                </tr>
                             }
                             else
                             {
-                                foreach (var u in Model.LatestUsers)
+                                @foreach (var u in Model.LatestUsers)
                                 {
                                     <tr>
+                                        <td>@u.Id</td>
                                         <td>@u.FirstName</td>
                                         <td>@u.LastName</td>
-                                        <td>@u.Email</td>
-                                        <td>@u.Address</td>
-                                        <td>@u.City</td>
-                                        <td>@u.Country</td>
                                         <td>
                                             @foreach (var r in u.Roles)
                                             {
                                                 <span class="badge bg-secondary me-1">@r</span>
                                             }
                                         </td>
-                                        <td>
-                                            @if (u.IsLocked)
-                                            {
-                                                <span class="badge bg-danger">Locked</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-success">Active</span>
-                                            }
+                                        <td class="text-center">
+                                            <a asp-page="/Admin/UserDetails"
+                                               asp-route-id="@u.Id"
+                                               class="btn btn-outline-info btn-sm"
+                                               title="View Profile">
+                                                <i class="fa fa-info-circle"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                 }
@@ -114,9 +130,19 @@
                     </table>
                 </div>
 
-                <a asp-page="/Index" class="site-btn" style="margin-top:12px;">Back</a>
+                <!-- BACK BUTTON -->
+                <div class="text-end mt-3">
+                    <a asp-page="/Index" class="btn btn-secondary">
+                        <i class="fa fa-arrow-left me-1"></i> Back to Site
+                    </a>
+                </div>
             </div>
         </div>
 
     </div>
 </section>
+
+@section Scripts {
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}
