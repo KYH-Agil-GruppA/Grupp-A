@@ -31,16 +31,4 @@ public class Session
 
     public DateTime StartTime { get; set; } = default;
     public DateTime EndTime { get; set; } = default;
-
-    /// <summary>
-    /// The amount of people that have booked this session.
-    /// </summary>
-    [NotMapped, Obsolete("Use Bookings.Count instead.")]
-    public int CurrentBookings => Bookings.Count;  // Property istället för field!
-
-    /// <summary>
-    /// The day of the week the session starts.
-    /// </summary>
-    [NotMapped, Obsolete("Use StartTime.DayOfWeek instead.")]
-    public string DayOfWeek => StartTime.DayOfWeek.ToString();
 }
