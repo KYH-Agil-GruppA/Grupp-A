@@ -94,6 +94,7 @@ public class DashboardModel : PageModel
 
         LatestUsers = await query
             .OrderByDescending(u => u.Id)
+            .Where(u => !u.IsDeleted)
             .Take(20)
             .Select(u => new SimpleUserRow
             {

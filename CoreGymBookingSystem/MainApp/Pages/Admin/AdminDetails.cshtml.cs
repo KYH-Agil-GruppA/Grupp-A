@@ -1,9 +1,11 @@
 using DAL.DbContext;
+using MainApp.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Service.Interfaces;
 
 namespace WebApp.Pages.Admin;
 
@@ -12,9 +14,15 @@ public class AdminDetailsModel : PageModel
 {
     private readonly ApplicationDbContext _db;
 
-    public AdminDetailsModel(ApplicationDbContext db)
+    public readonly IUserService _userService;
+
+    [BindProperty]
+    public UserViewModel UserViewModel { get; set; }
+
+    public AdminDetailsModel(ApplicationDbContext db, IUserService userService)
     {
         _db = db;
+        _userService = userService;
     }
 
     [TempData]
@@ -59,10 +67,41 @@ public class AdminDetailsModel : PageModel
             })
             .SingleOrDefaultAsync(ct);
 
+
+        var userDelete = await _db.Users
+          .AsNoTracking()
+          .Where(u => u.Id == id)
+          .Select(u => new UserViewModel
+          {
+              Id = u.Id,
+              FirstName = u.FirstName,
+              LastName = u.LastName,
+              Address = u.Address,
+              City = u.City,
+              Country = u.Country,
+
+          })
+          .SingleOrDefaultAsync(ct);
+
         if (user == null)
+            return NotFound();
+
+        if (userDelete == null)
             return NotFound();
 
         User = user;
         return Page();
     }
+
+    public IActionResult OnPostDelete(int id)
+    {
+        var user = _userService.GetUser(UserViewModel.Id);
+        if (user != null)
+        {
+            user.IsDeleted = true;
+            _userService.Update(user);
+        }
+        return RedirectToPage("/Admin/Dashboard");
+    }
+
 }

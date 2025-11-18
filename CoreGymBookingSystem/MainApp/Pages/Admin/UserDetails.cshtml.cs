@@ -93,7 +93,25 @@ public class UserDetailsModel : PageModel
             })
             .SingleOrDefaultAsync(ct);
 
+        var userDelete = await _db.Users
+        .AsNoTracking()
+        .Where(u => u.Id == id)
+        .Select(u => new UserViewModel
+        {
+            Id = u.Id,
+            FirstName = u.FirstName,
+            LastName = u.LastName,
+            Address = u.Address,
+            City = u.City,
+            Country = u.Country,
+
+        })
+        .SingleOrDefaultAsync(ct);
+
         if (user == null)
+            return NotFound();
+
+        if (userDelete != null)
             return NotFound();
 
         User = user;
@@ -173,7 +191,7 @@ public class UserDetailsModel : PageModel
     }
 
     // DELETE user
-    public void OnPostDeleteAsync(int id, CancellationToken ct)
+    public IActionResult OnPostDeleteAsync(int id)
     {
         var users = _userService.GetUser(UserViewModel.Id);
         if (users != null)
@@ -184,7 +202,7 @@ public class UserDetailsModel : PageModel
         }
 
         StatusMessage = "The member account has been deleted.";
-        RedirectToPage("/Admin/Dashboard");
+        return RedirectToPage("/Admin/Dashboard");
 
 
 
