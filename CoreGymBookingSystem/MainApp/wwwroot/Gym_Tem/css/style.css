@@ -3521,8 +3521,6 @@ ol {
 	border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
-
-<style >
 /* Make the timetable section fill most of the viewport and stay dark */
 .class-timetable-section {
 	background-color: #111; /* same dark as your theme */
@@ -3553,4 +3551,217 @@ html, body {
 .session-cell {
 	background-color: rgb(10, 10, 10); /* light black */
 }
-</style >
+
+
+
+/* ========================= */
+/* Admin Dashboard Styles    */
+/* ========================= */
+
+.admin-dashboard-section {
+    min-height: 100vh;
+    padding-top: 140px;
+    background-color: #151515; /* matchar class-timetable-section */
+}
+
+.admin-dashboard-container {
+    max-width: 900px;
+    background-color: #111;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+    color: #fff;
+}
+
+/* Header */
+
+.admin-dashboard-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.admin-dashboard-title {
+    color: #f36100;
+    text-transform: uppercase;
+}
+
+.admin-dashboard-subtitle {
+    color: #aaa;
+}
+
+/* Search bar */
+
+.admin-search-form {
+    margin-top: 20px;
+    max-width: 750px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.admin-search-group {
+    display: flex;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.admin-search-icon {
+    background: #000;
+    border: 1px solid #333;
+    width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ccc;
+}
+
+.admin-search-input {
+    background: #000;
+    border: 1px solid #333;
+    color: #fff;
+    padding: 12px;
+    font-size: 1.1rem;
+    flex: 1 1 auto;
+}
+
+.admin-search-input::placeholder {
+    color: #888;
+}
+
+.admin-search-btn {
+    background: #f36100;
+    border: none;
+    color: #fff;
+    padding: 0 20px;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.admin-search-btn:hover {
+    background: #e55a00;
+}
+
+.admin-search-clear {
+    border: 1px solid #777;
+    color: #ccc;
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    text-decoration: none;
+}
+
+.admin-search-clear:hover {
+    color: #fff;
+    border-color: #aaa;
+}
+
+/* Card */
+
+.admin-card {
+    background-color: #1a1a1a;
+    color: white;
+    border-radius: 12px;
+}
+
+.admin-card-header {
+    border-bottom: 1px solid #333;
+    padding: 20px;
+}
+
+.admin-card-title {
+    color: #f36100;
+    margin-bottom: 4px;
+}
+
+.admin-card-subtitle {
+    color: #aaa;
+}
+
+/* Stats */
+
+.admin-card-body {
+    padding: 20px 20px 30px;
+}
+
+.admin-stats-row {
+    display: flex;
+    text-align: center;
+    margin-bottom: 30px;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.admin-stat {
+    background-color: #181818;
+    border: 1px solid #333;
+    padding: 20px;
+    border-radius: 12px;
+    flex: 1 1 0;
+}
+
+.admin-stat i {
+    color: #f36100;
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+.admin-stat h6 {
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-bottom: 4px;
+}
+
+.admin-stat span {
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+
+/* Users table */
+
+.admin-users-title {
+    margin-bottom: 12px;
+}
+
+.admin-users-title h4 {
+    color: #f36100;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.admin-users-title small {
+    color: #ccc;
+    font-size: 0.9rem;
+}
+
+.admin-table-card {
+    background: #181818;
+    color: white;
+    border-radius: 10px;
+    padding: 0;
+}
+
+.admin-table-header {
+    border-bottom: 1px solid #333;
+}
+
+.admin-table-row {
+    border-bottom: 1px solid #333;
+}
+
+/* Back button container */
+
+.admin-back {
+    text-align: right;
+    margin-top: 25px;
+}
+
+/* Light hover på rader utan att sabba gym-temat */
+.admin-table-card .table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}

@@ -6,136 +6,147 @@
     ViewData["Title"] = "Admin – Dashboard";
 }
 
-<section class="breadcrumb-section set-bg" data-setbg="/Gym_Tem/img/breadcrumb-bg.jpg">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12 text-center">
-                <div class="breadcrumb-text">
-                    <h2>Admin – Dashboard</h2>
-                    <div class="bt-option">
-                        <a asp-page="/Index">Home</a>
-                        <span>Admin Panel</span>
-                    </div>
+<section class="class-timetable-section admin-dashboard-section">
+    <div class="container admin-dashboard-container">
+
+        <!-- Header -->
+        <div class="admin-dashboard-header">
+            <h2 class="admin-dashboard-title">Admin Dashboard</h2>
+            <p class="admin-dashboard-subtitle">
+                Overview of users, members and trainers in your gym.
+            </p>
+
+            <!-- 🔍 SEARCH BAR UNDER HEADER -->
+            <form method="get" class="admin-search-form">
+                <div class="admin-search-group">
+                    <span class="admin-search-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" />
+                        </svg>
+                    </span>
+
+                    <input type="text"
+                           name="searchTerm"
+                           class="admin-search-input"
+                           placeholder="Search by ID, first name, last name or role..."
+                           value="@Model.SearchTerm" />
+
+                    <button type="submit" class="admin-search-btn">
+                        Search
+                    </button>
+
+                    <a asp-page="./Dashboard" class="admin-search-clear">
+                        Clear
+                    </a>
                 </div>
-            </div>
+            </form>
+
         </div>
-    </div>
-</section>
 
-<section class="contact-section spad">
-    <div class="container">
+        <!-- CARD -->
+        <div class="admin-card">
 
-        <div class="card mt-4 shadow-lg">
             <!-- HEADER -->
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <div>
-                    <h3 class="mb-0">Gym Overview</h3>
-                    <small class="text-muted">Summary of members & trainers</small>
-                </div>
-
-                <div class="d-flex gap-2">
-                    <a asp-page="/Admin/Users/Index" class="btn btn-outline-light btn-sm">
-                        <i class="fa fa-users-cog me-1"></i> Manage Users
-                    </a>
-                    <a asp-page="/Admin/Roles/Index" class="btn btn-outline-light btn-sm">
-                        <i class="fa fa-id-badge me-1"></i> Manage Roles
-                    </a>
-                </div>
+            <div class="admin-card-header">
+                <h3 class="admin-card-title">Gym Overview</h3>
+                <small class="admin-card-subtitle">
+                    Summary of members & trainers
+                </small>
             </div>
 
             <!-- BODY -->
-            <div class="card-body">
+            <div class="admin-card-body">
 
                 <!-- TOP STATS -->
-                <div class="row text-center mb-4">
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3 border rounded-3 h-100">
-                            <i class="fa fa-users fa-2x mb-2"></i>
-                            <h6 class="mb-1">Total Users</h6>
-                            <span class="fw-bold fs-5">@Model.TotalUsers</span>
-                        </div>
+                <div class="admin-stats-row">
+                    <div class="admin-stat">
+                        <i class="fa fa-users"></i>
+                        <h6>Total Users</h6>
+                        <span>@Model.TotalUsers</span>
                     </div>
 
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3 border rounded-3 h-100">
-                            <i class="fa fa-id-badge fa-2x mb-2"></i>
-                            <h6 class="mb-1">Members</h6>
-                            <span class="fw-bold fs-5">@Model.MembersCount</span>
-                        </div>
+                    <div class="admin-stat">
+                        <i class="fa fa-id-badge"></i>
+                        <h6>Members</h6>
+                        <span>@Model.MembersCount</span>
                     </div>
 
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3 border rounded-3 h-100">
-                            <i class="fa fa-dumbbell fa-2x mb-2"></i>
-                            <h6 class="mb-1">Trainers</h6>
-                            <span class="fw-bold fs-5">@Model.TrainersCount</span>
-                        </div>
+                    <div class="admin-stat">
+                        <i class="fa fa-dumbbell"></i>
+                        <h6>Trainers</h6>
+                        <span>@Model.TrainersCount</span>
                     </div>
                 </div>
 
-                <!-- LATEST USERS -->
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h4 class="mb-0">Latest Members & Trainers</h4>
-                    <small class="text-muted">
+                <!-- TITLE -->
+                <div class="admin-users-title">
+                    <h4>Latest Members & Trainers</h4>
+                    <small>
                         Showing the most recently created users with roles Member/Trainer
                     </small>
                 </div>
 
-                <div class="table-responsive mt-2">
-                    <table class="table table-striped table-hover align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>ID</th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Roles</th>
-                                <th class="text-center">Info</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (!Model.LatestUsers.Any())
-                            {
-                                <tr>
-                                    <td colspan="5" class="text-center">
-                                        <em>No users found.</em>
-                                    </td>
+                <!-- USERS TABLE -->
+                <div class="admin-table-card">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-borderless align-middle mb-0">
+                            <thead class="admin-table-header">
+                                <tr class="text-uppercase text-secondary small">
+                                    <th>ID</th>
+                                    <th>First Name</th>
+                                    <th>Last Name</th>
+                                    <th>Roles</th>
+                                    <th class="text-center">Info</th>
                                 </tr>
-                            }
-                            else
-                            {
-                                @foreach (var u in Model.LatestUsers)
+                            </thead>
+                            <tbody>
+                                @if (!Model.LatestUsers.Any())
                                 {
                                     <tr>
-                                        <td>@u.Id</td>
-                                        <td>@u.FirstName</td>
-                                        <td>@u.LastName</td>
-                                        <td>
-                                            @foreach (var r in u.Roles)
-                                            {
-                                                <span class="badge bg-secondary me-1">@r</span>
-                                            }
-                                        </td>
-                                        <td class="text-center">
-                                            <a asp-page="/Admin/UserDetails"
-                                               asp-route-id="@u.Id"
-                                               class="btn btn-outline-info btn-sm"
-                                               title="View Profile">
-                                                <i class="fa fa-info-circle"></i>
-                                            </a>
+                                        <td colspan="5" class="text-center py-4 text-muted">
+                                            <em>No users found.</em>
                                         </td>
                                     </tr>
                                 }
-                            }
-                        </tbody>
-                    </table>
+                                else
+                                {
+                                    @foreach (var u in Model.LatestUsers)
+                                    {
+                                        <tr class="admin-table-row">
+                                            <td>@u.Id</td>
+                                            <td>@u.FirstName</td>
+                                            <td>@u.LastName</td>
+                                            <td>
+                                                @foreach (var r in u.Roles)
+                                                {
+                                                    <span class="badge rounded-pill bg-secondary me-1">@r</span>
+                                                }
+                                            </td>
+                                            <td class="text-center">
+                                                <a asp-page="/Admin/UserDetails"
+                                                   asp-route-id="@u.Id"
+                                                   class="btn btn-sm btn-outline-info"
+                                                   title="View Profile">
+                                                    <i class="fa fa-info-circle"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- BACK BUTTON -->
-                <div class="text-end mt-3">
-                    <a asp-page="/Index" class="btn btn-secondary">
+                <div class="admin-back">
+                    <a asp-page="/Index"
+                       class="btn btn-outline-light">
                         <i class="fa fa-arrow-left me-1"></i> Back to Site
                     </a>
                 </div>
+
             </div>
         </div>
 

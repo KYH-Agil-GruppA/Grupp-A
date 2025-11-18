@@ -25,6 +25,8 @@ public class DashboardModel : PageModel
     public int TrainersCount { get; private set; }
     public List<SimpleUserRow> LatestUsers { get; private set; } = new();
 
+    public string? SearchTerm { get; private set; }
+
     public class SimpleUserRow
     {
         public int Id { get; set; }
@@ -43,8 +45,10 @@ public class DashboardModel : PageModel
         public bool IsLocked { get; set; }
     }
 
-    public async Task OnGetAsync(CancellationToken ct)
+    public async Task OnGetAsync(string? searchTerm, CancellationToken ct)
     {
+        SearchTerm = searchTerm;
+
         TotalUsers = await _db.Users.AsNoTracking().CountAsync(ct);
         MembersCount = await CountInRoleAsync("Member", ct);
         TrainersCount = await CountInRoleAsync("Trainer", ct);
@@ -57,9 +61,36 @@ public class DashboardModel : PageModel
                       || (trainerId != null && ur.RoleId == trainerId))
             .Select(ur => ur.UserId);
 
-        LatestUsers = await _db.Users.AsNoTracking()
-            .Where(u => targetUserIds.Contains(u.Id))
-            .OrderByDescending(u => u.Id)     
+        var query = _db.Users.AsNoTracking()
+            .Where(u => targetUserIds.Contains(u.Id));
+
+        // 🔍 FILTER: Id, FirstName, LastName, Role
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var term = searchTerm.Trim();
+            int idValue;
+            bool isIdSearch = int.TryParse(term, out idValue);
+
+            query = query.Where(u =>
+                // Sök på ID (om man skriver t.ex. "5")
+                (isIdSearch && u.Id == idValue)
+                // Sök på FirstName
+                || (u.FirstName != null && u.FirstName.Contains(term))
+                // Sök på LastName
+                || (u.LastName != null && u.LastName.Contains(term))
+                // Sök på Role-namn
+                || _db.UserRoles.AsNoTracking()
+                    .Where(ur => ur.UserId == u.Id)
+                    .Join(_db.Roles.AsNoTracking(),
+                          ur => ur.RoleId,
+                          r => r.Id,
+                          (ur, r) => r.Name)
+                    .Any(roleName => roleName.Contains(term))
+            );
+        }
+
+        LatestUsers = await query
+            .OrderByDescending(u => u.Id)
             .Take(20)
             .Select(u => new SimpleUserRow
             {
@@ -78,6 +109,7 @@ public class DashboardModel : PageModel
             })
             .ToListAsync(ct);
     }
+
 
     private async Task<int> CountInRoleAsync(string roleName, CancellationToken ct)
     {
