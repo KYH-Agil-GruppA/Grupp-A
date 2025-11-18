@@ -2,21 +2,17 @@
 @model MainApp.Pages.ClassDetailsModel
 @{
     Layout = "_GymLayout";
-    ViewData["Title"] = "Class Details";
+    ViewData["Title"] = "Class Timetable";
 }
 
-<!-- Class Timetable Section Begin -->
-<section class="class-timetable-section class-details-timetable spad"
-         style="min-height:100vh; padding-top:140px;">
+<section class="class-timetable-section class-details-timetable spad" style="min-height:100vh; padding-top:140px;">
     <div class="container" style="padding-top:100px;">
         <div class="row">
             <div class="col-lg-6">
                 <div class="section-title">
                     <span>Find Your Time</span>
                     <h2>
-                        @(Model.Filter == "all"
-                            ? "All Events"
-                            : System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Model.Filter))
+                        @(Model.Filter == "all" ? "All Events" : char.ToUpper(Model.Filter[0]) + Model.Filter[1..])
                     </h2>
                 </div>
             </div>
@@ -24,51 +20,16 @@
                 <div class="sidebar-option" style="padding-left:0;">
                     <div class="so-categories" style="margin-bottom:0;">
                         <ul class="list-unstyled m-0 d-flex flex-wrap" style="gap: 12px;">
-                            <li>
-                                <a asp-page="/ClassDetails"
-                                   asp-route-id="@(Model.Session?.Id)"
-                                   asp-route-filter="all"
-                                   class="cat-link @(Model.Filter == "all" ? "active" : "")"
-                                   style="padding: 8px 14px; border-radius: 8px; display:inline-block;">
-                                    All Events
-                                </a>
-                            </li>
-                            <li>
-                                <a asp-page="/ClassDetails"
-                                   asp-route-id="@(Model.Session?.Id)"
-                                   asp-route-filter="yoga"
-                                   class="cat-link @(Model.Filter == "yoga" ? "active" : "")"
-                                   style="padding: 8px 14px; border-radius: 8px; display:inline-block;">
-                                    Yoga
-                                </a>
-                            </li>
-                            <li>
-                                <a asp-page="/ClassDetails"
-                                   asp-route-id="@(Model.Session?.Id)"
-                                   asp-route-filter="cardio"
-                                   class="cat-link @(Model.Filter == "cardio" ? "active" : "")"
-                                   style="padding: 8px 14px; border-radius: 8px; display:inline-block;">
-                                    Cardio
-                                </a>
-                            </li>
-                            <li>
-                                <a asp-page="/ClassDetails"
-                                   asp-route-id="@(Model.Session?.Id)"
-                                   asp-route-filter="strength"
-                                   class="cat-link @(Model.Filter == "strength" ? "active" : "")"
-                                   style="padding: 8px 14px; border-radius: 8px; display:inline-block;">
-                                    Strength
-                                </a>
-                            </li>
+                            <li><a asp-page="/ClassDetails" asp-route-filter="all" class="cat-link @(Model.Filter == "all" ? "active" : "")">All Events</a></li>
+                            <li><a asp-page="/ClassDetails" asp-route-filter="yoga" class="cat-link @(Model.Filter == "yoga" ? "active" : "")">Yoga</a></li>
+                            <li><a asp-page="/ClassDetails" asp-route-filter="cardio" class="cat-link @(Model.Filter == "cardio" ? "active" : "")">Cardio</a></li>
+                            <li><a asp-page="/ClassDetails" asp-route-filter="strength" class="cat-link @(Model.Filter == "strength" ? "active" : "")">Strength</a></li>
                         </ul>
                     </div>
                 </div>
             </div>
-
-
-
         </div>
-       
+
         <div class="row">
             <div class="col-lg-12">
                 <div class="class-timetable details-timetable">
@@ -86,26 +47,24 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var timeSlot in Model.Sessions.GroupBy(s => new { s.StartTime, s.EndTime }))
+                            @foreach (var timeSlot in Model.Sessions
+                                                        .GroupBy(s => new { s.StartTime, s.EndTime })
+                                                        .OrderBy(g => g.Key.StartTime))
                             {
                                 <tr>
                                     <td class="class-time">
                                         @timeSlot.Key.StartTime.ToString("HH:mm") - @timeSlot.Key.EndTime.ToString("HH:mm")
                                     </td>
-
                                     @foreach (var day in new[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" })
                                     {
-                                        var session = timeSlot.FirstOrDefault(s => s.DayOfWeek == day);
-
+                                        var session = timeSlot.FirstOrDefault(s => s.DayOfWeek.ToString() == day);
                                         if (session != null)
                                         {
                                             <td class="dark-bg hover-bg ts-meta" data-tsmeta="session">
-                                                <a asp-page="/Sessions/SessionDetails"
-                                                   asp-route-id="@session.Id"
-                                                   style="display:block; color:inherit; text-decoration:none;">
+                                                <a asp-page="/Sessions/SessionDetails" asp-route-id="@session.Id" style="display:block; color:inherit; text-decoration:none;">
                                                     <h5>@session.Title</h5>
                                                     <span>@session.InstructorUserName</span>
-                                                  <p>@session.Description</p> 
+                                                    <p>@session.Description</p>
                                                     <small class="session-info-text">
                                                         Max: @session.MaxParticipants |
                                                         Booked: @session.CurrentBookings |
@@ -128,4 +87,3 @@
         </div>
     </div>
 </section>
-<!-- Class Timetable Section End -->
