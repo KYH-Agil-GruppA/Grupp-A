@@ -30,7 +30,6 @@
 
   <ItemGroup>
     <Folder Include="Areas\Identity\Data\" />
-    <Folder Include="Pages\Member\" />
   </ItemGroup>
 
 </Project>

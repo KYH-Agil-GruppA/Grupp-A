@@ -1,16 +1,23 @@
 ﻿@page
 @model MainApp.Pages.Membership.MembershipListModel
 @{
+    ViewData["Title"] = "Choose Membership";
 }
-@foreach (var m in Model.Memberships)
-{
-    <div class="card">
-        <h2>@m.Name</h2>
-        <p>@m.Description</p>
-        <h3>@m.Price kr</h3>
-        <a asp-page="MembershipDetails" asp-route-id="@m.Id" class="btn btn-primary">Choose</a>
-        <a asp-page="Signup" asp-route-id="@m.Id" class="btn btn-primary">
-            Choose
-        </a>
-    </div>
-}
+
+<h1 style="color:white; text-align:center; margin:30px;">Choose Your Membership</h1>
+
+<div style="display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
+    @foreach (var m in Model.Memberships)
+    {
+        <div style="background:#222; padding:20px; width:260px; border-radius:10px; color:white; text-align:center;">
+            <h2>@m.Name</h2>
+            <p>@m.Description</p>
+            <h3>@m.Price kr</h3>
+
+            <a asp-page="/Membership/Signup" asp-route-id="@m.Id"
+               style="display:block; margin-top:10px; padding:10px; background:#ff6600; color:white; border-radius:5px; text-decoration:none;">
+                Choose
+            </a>
+        </div>
+    }
+</div>

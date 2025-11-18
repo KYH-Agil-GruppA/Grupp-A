@@ -1,6 +1,7 @@
 using DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Service.Interfaces;
 
 namespace MainApp.Pages.Membership
 {
@@ -8,12 +9,12 @@ namespace MainApp.Pages.Membership
     {
         private readonly IMembershipService _service;
 
+        public List<MembershipType> Memberships { get; set; } = new();
+
         public MembershipListModel(IMembershipService service)
         {
             _service = service;
         }
-
-        public List<MembershipType> Memberships { get; set; }
 
         public async Task OnGet()
         {

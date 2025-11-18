@@ -1,0 +1,42 @@
+﻿@page
+@model MainApp.Pages.Member.ProfileModel
+@{
+    ViewData["Title"] = "Your Profile";
+}
+<h1 style="color:yellow;">THIS IS MY PAGE</h1>
+
+<div class="profile-container" style="padding:40px; color:white; max-width:600px; margin:auto;">
+
+    <h2 style="margin-bottom:20px;">Your Profile</h2>
+
+    <div class="profile-section" style="margin-bottom:30px;">
+        <h4>Personal Information</h4>
+        <p><strong>Name:</strong> @Model.CurrentUser?.UserName</p>
+        <p><strong>Email:</strong> @Model.CurrentUser?.Email</p>
+    </div>
+
+    <div class="membership-section" style="margin-bottom:30px;">
+        <h4>Your Membership</h4>
+
+        @if (Model.Member != null)
+        {
+            <p>
+                <strong>Type:</strong> @Model.Member.Name <br />
+                <strong>Price:</strong> @Model.Member.Price kr
+            </p>
+        }
+        else
+        {
+            <p style="color:orange;">
+                You do not have an active membership yet.
+            </p>
+        }
+    </div>
+
+    <a href="/Membership/MembershipList"
+       class="btn btn-primary"
+       style="padding:10px 20px; background-color:#ff6600; border:none; color:white;">
+        Change Membership
+    </a>
+
+</div>

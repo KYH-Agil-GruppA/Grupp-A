@@ -4,6 +4,7 @@ using DAL.Repositories;
 using DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Service.Interfaces;
 using Service.Services;
 using Services.Interfaces;
 
@@ -32,6 +33,9 @@ namespace MainApp
             builder.Services.AddScoped<ISessionService, SessionService>();
             builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
             builder.Services.AddScoped<INotificationService, NotificationService>();
+            builder.Services.AddScoped<IMembershipRepository, MembershipRepository>();
+            builder.Services.AddScoped<IMembershipService, MembershipService>();
+
 
             var app = builder.Build();
 

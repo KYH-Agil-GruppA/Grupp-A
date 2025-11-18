@@ -137,4 +137,40 @@ public class DataInitializer( ApplicationDbContext dbContext, UserManager<User> 
         await userManager.CreateAsync( user, password );
         await userManager.AddToRolesAsync( user, roles );
     }
+
+    private async Task SeedMembershipTypes()
+    {
+      
+        if (dbContext.MembershipTypes.Any())
+            return;
+
+        await dbContext.MembershipTypes.AddRangeAsync(
+            new MembershipType
+            {
+                Name = "Standard",
+                Description = "Unlimited access to all classes and gym facilities.",
+                Price = 399.00m
+            },
+            new MembershipType
+            {
+                Name = "Student",
+                Description = "Discounted membership for students with valid ID.",
+                Price = 299.00m
+            },
+            new MembershipType
+            {
+                Name = "Senior",
+                Description = "Gym access with flexible hours for seniors aged 65+.",
+                Price = 249.00m
+            }
+        );
+        await SeedMembershipTypes();
+        await SeedRoles();
+        await SeedUsers();
+        await SeedSessions();
+
+
+        await dbContext.SaveChangesAsync();
+    }
+
 }
