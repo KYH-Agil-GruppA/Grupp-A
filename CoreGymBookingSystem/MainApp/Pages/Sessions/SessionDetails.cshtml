@@ -4,8 +4,6 @@
     Layout = "_GymLayout";
     ViewData["Title"] = Model.Session.Title;
 }
-
-<!-- Class Details Section Begin -->
 <section class="class-details-section spad">
     <div class="container">
         <div class="row">
@@ -17,66 +15,65 @@
                     <div class="cd-text">
                         <div class="cd-single-item">
                             <h3>@Model.Session.Title</h3>
-                            <p class="session-extra-desc">
-                                Our @Model.Session.Title class is designed to help you reconnect with your body and mind.
-                                Guided by our experienced trainers, you’ll focus on breathing, flexibility, and balance while improving your posture and inner calm.
-                                Whether you’re a beginner or experienced, this session will leave you energized, centered, and ready to take on the day!
-                            </p>
+                            <p>Our @Model.Session.Title class is designed to help you reconnect with your body and mind...</p>
                         </div>
-
                         <div class="cd-single-item">
                             <h3>Trainer</h3>
                             <p>
-                                <strong>@Model.Session.Instructor.UserName</strong><br />
-                                @Model.Session.Instructor.Email
+                                <strong>@Model.Session.Instructor?.UserName</strong><br />
+                                @Model.Session.Instructor?.Email
                             </p>
                         </div>
-
                         <div class="cd-single-item">
                             <h3>Session Info</h3>
                             <p>
                                 <i class="fa fa-clock-o"></i>
-                                @Model.Session.StartTime.ToString("HH:mm") - @Model.Session.EndTime.ToString("HH:mm")<br />
+                                @Model.Session.StartTime.ToString("yyyy-MM-dd HH:mm") - @Model.Session.EndTime.ToString("HH:mm")<br />
                                 <i class="fa fa-users"></i>
-                                Booked: @Model.Session.Bookings.Count / @Model.Session.MaxParticipants
+                                Booked: <strong>@Model.Session.Bookings.Count</strong> / @Model.Session.MaxParticipants
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- RIGHT SIDE: Sidebar -->
-            <div class="col-lg-4 col-md-8">
-                <div class="sidebar-option">
-                    <div class="so-categories">
-                        <h5 class="title">Categories</h5>
-                        <ul>
-                            <li><a href="#">Yoga <span>12</span></a></li>
-                            <li><a href="#">Runing <span>32</span></a></li>
-                            <li><a href="#">Weightloss <span>86</span></a></li>
-                            <li><a href="#">Cario <span>25</span></a></li>
-                            <li><a href="#">Body buiding <span>36</span></a></li>
-                            <li><a href="#">Nutrition <span>15</span></a></li>
-                        </ul>
-                    </div>
-                   
-                    
-                </div>
-            </div>
         </div>
 
+        @if (!string.IsNullOrEmpty(Model.StatusMessage))
+        {
+            <div style="text-align: center; margin-top: 30px;">
+                <div style="display: inline-block; padding: 15px 25px; background-color: #f36100; color: white; border-radius: 5px; font-weight: 500;">
+                    <span style="margin-left: 10px;">@Model.StatusMessage</span>
+                </div>
+            </div>
+        }
         <div class="session-actions text-center mt-5">
-            <a asp-page="/ClassDetails" class="btn-gym btn-back">
-                <i class="fa fa-arrow-left"></i> Back to Classes
-            </a>
+            <a asp-page="/ClassDetails" class="btn-gym btn-back">Back to Classes</a>
+            @if (Model.IsMember)
+            {
+                var isFull = Model.Session.Bookings.Count >= Model.Session.MaxParticipants;
 
-            <form method="post" asp-page-handler="Book" asp-route-id="@Model.Session.Id" class="d-inline">
-                <button type="submit" class="btn-gym btn-book">
-                    <i class="fa fa-calendar-check-o"></i> Book This Session
-                </button>
-            </form>
+                @if (Model.IsBooked)
+                {
+                    <form asp-page-handler="Cancel" asp-route-id="@Model.Session.Id" method="post" class="d-inline">
+                        <button type="submit" class="btn-gym btn-cancel">Cancel Booking</button>
+                    </form>
+                }
+                else if (!isFull)
+                {
+                    <form asp-page-handler="Book" asp-route-id="@Model.Session.Id" method="post" class="d-inline">
+                        <button type="submit" class="btn-gym btn-book">Book This Session</button>
+                    </form>
+                }
+                else
+                {
+                    <span class="btn-gym btn-full" style="opacity: 0.6; cursor: not-allowed;">Session Full</span>
+                }
+            }
+            else
+            {
+                <a asp-page="/Account/Login" class="btn-gym btn-login">Log in to Book</a>
+            }
         </div>
 
     </div>
 </section>
-<!-- Class Details Section End -->

@@ -1,65 +1,44 @@
-﻿using DAL.DTOs;
+using DAL.DTOs;
 using DAL.Entities;
 using DAL.Repositories.Interfaces;
 using Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Service.Services
+namespace Service.Services;
+
+public class SessionService : ISessionService
 {
-    public class SessionService : ISessionService
+    private static readonly HashSet<string> AllowedCategories = new(StringComparer.OrdinalIgnoreCase)
     {
-        private static readonly HashSet<string> Allowed =
-      new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-      {
-            "Yoga","Running","Weightloss","Cardio","Bodybuilding","Nutrition"
-      };
+        "Yoga", "Running", "Weightloss", "Cardio", "Bodybuilding", "Nutrition"
+    };
 
-        private readonly ISessionRepository _sessionRepository;
+    private readonly ISessionRepository _sessionRepository;
 
-        public SessionService(ISessionRepository sessionRepository)
-        {
-            _sessionRepository = sessionRepository;
-        }
+    public SessionService(ISessionRepository sessionRepository)
+    {
+        _sessionRepository = sessionRepository;
+    }
 
+    // === READ OPERATIONS ===
 
+    public async Task<List<Session>> GetAllSessionsAsync()
+    {
+        return await _sessionRepository.GetAllAsync();
+    }
 
-        public async Task<List<SessionsDto>> GetDetailedForInstructorWeekAsync(int instructorId, DateTime weekStart)
-        {
-            DateTime weekEnd = weekStart.Date.AddDays(7);
+    public async Task<Session?> GetSessionByIdAsync(int id)
+    {
+        return await _sessionRepository.GetByIdAsync(id);
+    }
 
-            var entities = await _sessionRepository.GetByInstructorWithDetailsAsync(instructorId, weekStart, weekEnd);
+    public async Task<List<SessionsDto>> GetDetailedForInstructorWeekAsync(int instructorId, DateTime weekStart)
+    {
+        var weekEnd = weekStart.Date.AddDays(7);
 
-            var result = new List<SessionsDto>();
-            foreach (var s in entities)
-            {
-                var dto = new SessionsDto();
-                dto.Id = s.Id;
-                dto.Title = s.Title;
-                dto.Description = s.Description;
-                dto.Category = s.Category;
-                dto.DayOfWeek = s.StartTime.DayOfWeek.ToString();
-                dto.StartTime = s.StartTime;
-                dto.EndTime = s.EndTime;
-                dto.InstructorUserName = s.Instructor != null ? s.Instructor.UserName : null;
-                dto.MaxParticipants = s.MaxParticipants;
-                dto.CurrentBookings = s.Bookings != null ? s.Bookings.Count : 0;
-                result.Add(dto);
-            }
+        var entities = await _sessionRepository.GetByInstructorWithDetailsAsync(
+            instructorId, weekStart, weekEnd);
 
-            return result;
-        }
-
-
-        public async Task<List<Session>> GetAllSessionsAsync()
-        {
-            return await _sessionRepository.GetAllAsync();
-        }
-
-        public async Task<Session?> GetSessionByIdAsync(int id)
+        return entities.Select(s => new SessionsDto
         {
             return await _sessionRepository.GetByIdAsync(id);
         }
@@ -111,29 +90,57 @@ namespace Service.Services
                 throw new ArgumentException("End time must be after start time.");
             }
 
-         
-            bool hasClash = await _sessionRepository.HasOverlapAsync(dto.InstructorId, dto.StartTime, dto.EndTime, null);
-            if (hasClash)
+        // Optional: validate category
+        if (!AllowedCategories.Contains(category))
+            return new List<SessionsDto>();
+
+        var sessions = await _sessionRepository.GetAllAsync();
+
+        return sessions
+            .Where(s => category.Equals(s.Category, StringComparison.OrdinalIgnoreCase))
+            .Select(s => new SessionsDto
             {
-                throw new InvalidOperationException("You already have a class scheduled during this time.");
-            }
+                Id = s.Id,
+                Title = s.Title,
+                Description = s.Description,
+                Category = s.Category,
+                DayOfWeek = s.StartTime.DayOfWeek.ToString(),
+                StartTime = s.StartTime,
+                EndTime = s.EndTime,
+                InstructorUserName = s.Instructor?.UserName,
+                MaxParticipants = s.MaxParticipants,
+                CurrentBookings = s.Bookings?.Count ?? 0
+            })
+            .ToList();
+    }
 
-        
-            var entity = new Session();
-            entity.Title = dto.Title;
-            entity.Description = dto.Description;
-            entity.Category = dto.Category.ToString();
-            entity.MaxParticipants = dto.MaxParticipants;
-            entity.StartTime = dto.StartTime;
-            entity.EndTime = dto.EndTime;
+    // === WRITE OPERATIONS ===
 
-        
-            await _sessionRepository.AddAsyncWithInstructor(entity, dto.InstructorId);
-            await _sessionRepository.SaveChangesAsync();
-        }
+    public async Task CreateAsync(SessionCreateDto dto)
+    {
+        if (dto.EndTime <= dto.StartTime)
+            throw new ArgumentException("End time must be after start time.");
+
+        if (!AllowedCategories.Contains(dto.Category.ToString()))
+            throw new ArgumentException($"Category '{dto.Category}' is not allowed.");
+
+        bool hasOverlap = await _sessionRepository.HasOverlapAsync(
+            dto.InstructorId, dto.StartTime, dto.EndTime, excludeSessionId: null);
+
+        if (hasOverlap)
+            throw new InvalidOperationException("You already have a class scheduled during this time.");
+
+        var session = new Session
+        {
+            Title = dto.Title,
+            Description = dto.Description,
+            Category = dto.Category.ToString(),
+            MaxParticipants = dto.MaxParticipants,
+            StartTime = dto.StartTime,
+            EndTime = dto.EndTime
+        };
+
+        await _sessionRepository.AddAsyncWithInstructor(session, dto.InstructorId);
+        await _sessionRepository.SaveChangesAsync();
+    }
 }
-}
-
-
-
-
