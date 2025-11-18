@@ -21,7 +21,20 @@ public class UserDetailsModel : PageModel
         _roleManager = roleManager;
     }
 
+    //  message shown to admin after actions
+    [TempData]
+    public string? StatusMessage { get; set; }
+
     public UserDetailsVm User { get; private set; } = default!;
+
+    [BindProperty]
+    public EditUserInput Input { get; set; } = new();
+
+    // Roles UI
+    public List<string> AvailableRoles { get; private set; } = new();
+
+    [BindProperty]
+    public string? SelectedRole { get; set; }
 
     public class UserDetailsVm
     {
@@ -35,6 +48,17 @@ public class UserDetailsModel : PageModel
         public string Email { get; set; } = "";
         public string[] Roles { get; set; } = Array.Empty<string>();
         public bool IsLocked { get; set; }
+    }
+
+    public class EditUserInput
+    {
+        public int Id { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? Email { get; set; }
+        public string? Address { get; set; }
+        public string? City { get; set; }
+        public string? Country { get; set; }
     }
 
     public async Task<IActionResult> OnGetAsync(int id, CancellationToken ct)
@@ -66,6 +90,138 @@ public class UserDetailsModel : PageModel
             return NotFound();
 
         User = user;
+
+        // Pre-fill edit form
+        Input = new EditUserInput
+        {
+            Id = user.Id,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            Address = user.Address,
+            City = user.City,
+            Country = user.Country
+        };
+
+        // Load roles for dropdown
+        AvailableRoles = await _roleManager.Roles
+            .Select(r => r.Name!)
+            .OrderBy(n => n)
+            .ToListAsync(ct);
+
+        SelectedRole = User.Roles.FirstOrDefault();
+
         return Page();
+    }
+
+    // UPDATE user (basic info)
+    public async Task<IActionResult> OnPostSaveAsync(CancellationToken ct)
+    {
+        var user = await _db.Users
+            .FirstOrDefaultAsync(u => u.Id == Input.Id, ct);
+
+        if (user == null)
+            return NotFound();
+
+        user.FirstName = Input.FirstName ?? "";
+        user.LastName = Input.LastName ?? "";
+        user.Email = Input.Email;
+        user.Address = Input.Address ?? "";
+        user.City = Input.City ?? "";
+        user.Country = Input.Country ?? "";
+
+        await _db.SaveChangesAsync(ct);
+
+        StatusMessage = "Member details have been updated successfully.";
+
+        return RedirectToPage(new { id = Input.Id });
+    }
+
+    // LOCK account
+    public async Task<IActionResult> OnPostLockAsync(int id, CancellationToken ct)
+    {
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == id, ct);
+        if (user == null)
+            return NotFound();
+
+        user.LockoutEnd = DateTimeOffset.UtcNow.AddYears(100);
+        await _db.SaveChangesAsync(ct);
+
+        StatusMessage = "The member account has been locked.";
+        return RedirectToPage(new { id });
+    }
+
+    // UNLOCK account
+    public async Task<IActionResult> OnPostUnlockAsync(int id, CancellationToken ct)
+    {
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == id, ct);
+        if (user == null)
+            return NotFound();
+
+        user.LockoutEnd = null;
+        await _db.SaveChangesAsync(ct);
+
+        StatusMessage = "The member account has been unlocked.";
+        return RedirectToPage(new { id });
+    }
+
+    // DELETE user
+    public async Task<IActionResult> OnPostDeleteAsync(int id, CancellationToken ct)
+    {
+        var roles = await _db.UserRoles
+            .Where(ur => ur.UserId == id)
+            .ToListAsync(ct);
+        _db.UserRoles.RemoveRange(roles);
+
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == id, ct);
+        if (user == null)
+            return NotFound();
+
+        _db.Users.Remove(user);
+        await _db.SaveChangesAsync(ct);
+
+        StatusMessage = "The member has been deleted.";
+        return RedirectToPage("/Admin/Dashboard");
+    }
+
+    // CHANGE ROLE
+    public async Task<IActionResult> OnPostChangeRoleAsync(int id, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(SelectedRole))
+        {
+            StatusMessage = "Please select a role.";
+            return RedirectToPage(new { id });
+        }
+
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == id, ct);
+        if (user == null)
+            return NotFound();
+
+        var role = await _roleManager.FindByNameAsync(SelectedRole);
+        if (role == null)
+        {
+            StatusMessage = $"Role '{SelectedRole}' does not exist.";
+            return RedirectToPage(new { id });
+        }
+
+        // Remove all current roles
+        var currentRoles = await _db.UserRoles
+            .Where(ur => ur.UserId == id)
+            .ToListAsync(ct);
+
+        _db.UserRoles.RemoveRange(currentRoles);
+
+        // Assign the new role
+        _db.UserRoles.Add(new IdentityUserRole<int>
+        {
+            UserId = id,
+            RoleId = role.Id
+        });
+
+        await _db.SaveChangesAsync(ct);
+
+        StatusMessage = $"Role has been changed to '{SelectedRole}'.";
+
+        return RedirectToPage(new { id });
     }
 }

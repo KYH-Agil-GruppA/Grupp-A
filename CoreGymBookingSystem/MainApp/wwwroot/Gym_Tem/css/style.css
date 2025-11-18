@@ -3765,3 +3765,24 @@ html, body {
 .admin-table-card .table tbody tr:hover {
     background: rgba(255, 255, 255, 0.03);
 }
+.role-badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.35rem 0.75rem;
+	border-radius: 50px;
+	background: #6c757d; /* standard secondary badge */
+	color: white;
+	font-size: 0.75rem;
+	font-weight: 500;
+	margin-right: 0.25rem;
+}
+
+.role-badge-admin {
+	background: linear-gradient(90deg, #ffb703, #fb8500);
+	color: black;
+	font-weight: 600;
+}
+
+	.role-badge-admin i {
+		color: black;
+	}

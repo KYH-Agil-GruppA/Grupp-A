@@ -2,6 +2,7 @@
 using DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +21,10 @@ public class DashboardModel : PageModel
         _roleManager = roleManager;
     }
 
+    // NOTIFICATIONS IF SUCCES
+    [TempData]
+    public string? StatusMessage { get; set; }
+
     public int TotalUsers { get; private set; }
     public int MembersCount { get; private set; }
     public int TrainersCount { get; private set; }
@@ -32,13 +37,9 @@ public class DashboardModel : PageModel
         public int Id { get; set; }
         public string FirstName { get; set; } = "";
         public string LastName { get; set; } = "";
-
         public string Address { get; set; } = "";
-
         public string City { get; set; } = "";
-
         public string Country { get; set; } = "";
-
         public string UserName { get; set; } = "";
         public string Email { get; set; } = "";
         public string[] Roles { get; set; } = Array.Empty<string>();
@@ -55,16 +56,20 @@ public class DashboardModel : PageModel
 
         var memberId = (await _roleManager.FindByNameAsync("Member"))?.Id;
         var trainerId = (await _roleManager.FindByNameAsync("Trainer"))?.Id;
+        var adminId = (await _roleManager.FindByNameAsync("Admin"))?.Id;
 
         var targetUserIds = _db.UserRoles.AsNoTracking()
-            .Where(ur => (memberId != null && ur.RoleId == memberId)
-                      || (trainerId != null && ur.RoleId == trainerId))
+            .Where(ur =>
+                (memberId != null && ur.RoleId == memberId)
+                || (trainerId != null && ur.RoleId == trainerId)
+                || (adminId != null && ur.RoleId == adminId)
+            )
             .Select(ur => ur.UserId);
+
 
         var query = _db.Users.AsNoTracking()
             .Where(u => targetUserIds.Contains(u.Id));
 
-        // 🔍 FILTER: Id, FirstName, LastName, Role
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
             var term = searchTerm.Trim();
@@ -72,13 +77,9 @@ public class DashboardModel : PageModel
             bool isIdSearch = int.TryParse(term, out idValue);
 
             query = query.Where(u =>
-                // Sök på ID (om man skriver t.ex. "5")
                 (isIdSearch && u.Id == idValue)
-                // Sök på FirstName
                 || (u.FirstName != null && u.FirstName.Contains(term))
-                // Sök på LastName
                 || (u.LastName != null && u.LastName.Contains(term))
-                // Sök på Role-namn
                 || _db.UserRoles.AsNoTracking()
                     .Where(ur => ur.UserId == u.Id)
                     .Join(_db.Roles.AsNoTracking(),
@@ -109,7 +110,6 @@ public class DashboardModel : PageModel
             })
             .ToListAsync(ct);
     }
-
 
     private async Task<int> CountInRoleAsync(string roleName, CancellationToken ct)
     {
