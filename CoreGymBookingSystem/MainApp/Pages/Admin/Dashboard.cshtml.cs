@@ -43,6 +43,8 @@ public class DashboardModel : PageModel
         public string UserName { get; set; } = "";
         public string Email { get; set; } = "";
         public string[] Roles { get; set; } = Array.Empty<string>();
+
+        public bool IsDeleted { get; set; }
         public bool IsLocked { get; set; }
     }
 
@@ -106,6 +108,7 @@ public class DashboardModel : PageModel
                 Roles = _db.UserRoles.AsNoTracking().Where(ur => ur.UserId == u.Id)
                           .Join(_db.Roles.AsNoTracking(), ur => ur.RoleId, r => r.Id, (ur, r) => r.Name!)
                           .ToArray(),
+                IsDeleted = u.IsDeleted,
                 IsLocked = u.LockoutEnd != null && u.LockoutEnd > DateTimeOffset.UtcNow
             })
             .ToListAsync(ct);

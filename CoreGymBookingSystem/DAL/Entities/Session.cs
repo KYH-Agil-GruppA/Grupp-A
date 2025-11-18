@@ -63,4 +63,6 @@ public class Session
     /// </summary>
     [NotMapped, Obsolete( "Use StartTime.DayOfWeek instead." )]
     public string DayOfWeek => StartTime.DayOfWeek.ToString();
+
+    public bool IsDeleted { get; set; } 
 }

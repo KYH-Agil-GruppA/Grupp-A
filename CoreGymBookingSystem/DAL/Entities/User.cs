@@ -22,4 +22,6 @@ public class User : IdentityUser<int>
   
 
     public List<Session> Bookings { get; set; } = [];
+
+    public bool IsDeleted { get; set; }
 }

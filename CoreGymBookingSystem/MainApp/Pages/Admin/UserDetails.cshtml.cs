@@ -1,9 +1,11 @@
 using DAL.DbContext;
+using MainApp.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Service.Interfaces;
 
 namespace WebApp.Pages.Admin;
 
@@ -12,6 +14,8 @@ public class UserDetailsModel : PageModel
 {
     private readonly ApplicationDbContext _db;
     private readonly RoleManager<IdentityRole<int>> _roleManager;
+
+    public readonly IUserService _userService;
 
     public UserDetailsModel(
         ApplicationDbContext db,
@@ -29,6 +33,9 @@ public class UserDetailsModel : PageModel
 
     [BindProperty]
     public EditUserInput Input { get; set; } = new();
+
+   [BindProperty]
+    public UserViewModel UserViewModel { get; set; }
 
     // Roles UI
     public List<string> AvailableRoles { get; private set; } = new();
@@ -166,22 +173,23 @@ public class UserDetailsModel : PageModel
     }
 
     // DELETE user
-    public async Task<IActionResult> OnPostDeleteAsync(int id, CancellationToken ct)
+    public void OnPostDeleteAsync(int id, CancellationToken ct)
     {
-        var roles = await _db.UserRoles
-            .Where(ur => ur.UserId == id)
-            .ToListAsync(ct);
-        _db.UserRoles.RemoveRange(roles);
+        var users = _userService.GetUser(UserViewModel.Id);
+        if (users != null)
+        {
+            users.IsDeleted = true;
+            _userService.Update(users);
 
-        var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == id, ct);
-        if (user == null)
-            return NotFound();
+        }
 
-        _db.Users.Remove(user);
-        await _db.SaveChangesAsync(ct);
+        StatusMessage = "The member account has been deleted.";
+        RedirectToPage("/Admin/Dashboard");
 
-        StatusMessage = "The member has been deleted.";
-        return RedirectToPage("/Admin/Dashboard");
+
+
+
+
     }
 
     // CHANGE ROLE

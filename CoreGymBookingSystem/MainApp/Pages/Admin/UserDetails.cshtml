@@ -47,6 +47,7 @@
                                  style="width: 72px; height: 72px; background: rgba(255,255,255,0.06); font-size: 1.8rem;">
                                 @Model.User.FirstName?.FirstOrDefault().ToString().ToUpper()
                                 @Model.User.LastName?.FirstOrDefault().ToString().ToUpper()
+
                             </div>
                         </div>
 
@@ -109,10 +110,8 @@
 
                             <form method="post" asp-page-handler="Delete" class="d-inline"
                                   onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.');">
-                                <input type="hidden" name="id" value="@Model.User.Id" />
-                                <button type="submit" class="btn btn-sm btn-outline-danger">
-                                    <i class="fa-regular fa-trash-can me-1"></i> Delete user
-                                </button>
+                               
+                             
                             </form>
                         </div>
 
@@ -208,6 +207,7 @@
                                     <i class="fa-regular fa-floppy-disk me-1"></i> Save changes
                                 </button>
                             </div>
+                            <button asp-page-handler="Delete" type="submit" class="btn btn-warning"> <i class="fas fa-trash me-2"></i> Delete</button>
                         </form>
 
                         <!-- MEMBERSHIP FEATURE SECTION (UI ONLY) -->
