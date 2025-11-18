@@ -19,7 +19,6 @@ public class SessionService : ISessionService
         _sessionRepository = sessionRepository;
     }
 
-    // === READ OPERATIONS ===
 
     public async Task<List<Session>> GetAllSessionsAsync()
     {
@@ -38,66 +37,7 @@ public class SessionService : ISessionService
         var entities = await _sessionRepository.GetByInstructorWithDetailsAsync(
             instructorId, weekStart, weekEnd);
 
-        return entities.Select(s => new SessionsDto
-        {
-            return await _sessionRepository.GetByIdAsync(id);
-        }
-
-        public async Task<List<SessionsDto>> SearchByCategory(string category)
-        {
-            var sessions = await  _sessionRepository.GetAllAsync();
-            var filteredSessions = sessions
-                .Where(s => s.Category != null && s.Category.Equals(category, StringComparison.OrdinalIgnoreCase))
-                .Select(s => new SessionsDto
-                {
-                    Id = s.Id,
-                    Title = s.Title,
-                    Description = s.Description,
-                    Category = s.Category,
-                   
-                })
-                .ToList();
-
-            return filteredSessions;
-
-        }
-        public async Task<List<SessionsDto>> GetSessionsByCategoryAsync(string category)
-        {
-            var sessions = await _sessionRepository.GetAllAsync();
-
-            return sessions
-                .Where(s => !string.IsNullOrEmpty(s.Category) &&
-                            s.Category.Equals(category, StringComparison.OrdinalIgnoreCase))
-                .Select(s => new SessionsDto
-                {
-                    Id = s.Id,
-                    Title = s.Title,
-                    Description = s.Description,
-                    Category = s.Category,
-                    DayOfWeek = s.StartTime.DayOfWeek.ToString(),
-                    StartTime = s.StartTime,
-                    EndTime = s.EndTime,
-                    InstructorUserName = s.Instructor?.UserName,
-                    MaxParticipants = s.MaxParticipants,
-                    CurrentBookings = s.Bookings.Count
-                })
-                .ToList();
-        }
-        public async Task CreateAsync(SessionCreateDto dto)
-        {
-            if (dto.EndTime <= dto.StartTime)
-            {
-                throw new ArgumentException("End time must be after start time.");
-            }
-
-        // Optional: validate category
-        if (!AllowedCategories.Contains(category))
-            return new List<SessionsDto>();
-
-        var sessions = await _sessionRepository.GetAllAsync();
-
-        return sessions
-            .Where(s => category.Equals(s.Category, StringComparison.OrdinalIgnoreCase))
+        return entities
             .Select(s => new SessionsDto
             {
                 Id = s.Id,
@@ -114,14 +54,69 @@ public class SessionService : ISessionService
             .ToList();
     }
 
-    // === WRITE OPERATIONS ===
+    public async Task<List<SessionsDto>> SearchByCategory(string category)
+    {
+        if (string.IsNullOrWhiteSpace(category))
+            return new List<SessionsDto>();
+
+        var sessions = await _sessionRepository.GetAllAsync();
+
+        var filteredSessions = sessions
+            .Where(s => s.Category != null &&
+                        s.Category.Equals(category, StringComparison.OrdinalIgnoreCase))
+            .Select(s => new SessionsDto
+            {
+                Id = s.Id,
+                Title = s.Title,
+                Description = s.Description,
+                Category = s.Category,
+                DayOfWeek = s.StartTime.DayOfWeek.ToString(),
+                StartTime = s.StartTime,
+                EndTime = s.EndTime,
+                InstructorUserName = s.Instructor?.UserName,
+                MaxParticipants = s.MaxParticipants,
+                CurrentBookings = s.Bookings?.Count ?? 0
+            })
+            .ToList();
+
+        return filteredSessions;
+    }
+
+    public async Task<List<SessionsDto>> GetSessionsByCategoryAsync(string category)
+    {
+        if (!AllowedCategories.Contains(category))
+            return new List<SessionsDto>();
+
+        var sessions = await _sessionRepository.GetAllAsync();
+
+        return sessions
+            .Where(s => !string.IsNullOrEmpty(s.Category) &&
+                        s.Category.Equals(category, StringComparison.OrdinalIgnoreCase))
+            .Select(s => new SessionsDto
+            {
+                Id = s.Id,
+                Title = s.Title,
+                Description = s.Description,
+                Category = s.Category,
+                DayOfWeek = s.StartTime.DayOfWeek.ToString(),
+                StartTime = s.StartTime,
+                EndTime = s.EndTime,
+                InstructorUserName = s.Instructor?.UserName,
+                MaxParticipants = s.MaxParticipants,
+                CurrentBookings = s.Bookings?.Count ?? 0
+            })
+            .ToList();
+    }
+
 
     public async Task CreateAsync(SessionCreateDto dto)
     {
         if (dto.EndTime <= dto.StartTime)
             throw new ArgumentException("End time must be after start time.");
 
-        if (!AllowedCategories.Contains(dto.Category.ToString()))
+        var categoryString = dto.Category.ToString();
+
+        if (!AllowedCategories.Contains(categoryString))
             throw new ArgumentException($"Category '{dto.Category}' is not allowed.");
 
         bool hasOverlap = await _sessionRepository.HasOverlapAsync(
@@ -134,7 +129,7 @@ public class SessionService : ISessionService
         {
             Title = dto.Title,
             Description = dto.Description,
-            Category = dto.Category.ToString(),
+            Category = categoryString,
             MaxParticipants = dto.MaxParticipants,
             StartTime = dto.StartTime,
             EndTime = dto.EndTime
