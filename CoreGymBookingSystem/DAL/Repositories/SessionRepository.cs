@@ -1,4 +1,4 @@
-﻿using DAL.DbContext;
+using DAL.DbContext;
 using DAL.Entities;
 using DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 namespace DAL.Repositories;
 
 public class SessionRepository : ISessionRepository
-
 {
     private readonly ApplicationDbContext _context;
 
@@ -15,40 +14,21 @@ public class SessionRepository : ISessionRepository
         _context = context;
     }
 
-
-    // NEW: check if there is any overlapping session for the same instructor
-    public async Task<bool> HasOverlapAsync(int instructorId, DateTime start, DateTime end, int? excludeSessionId = null)
+    public async Task<List<Session>> GetAllAsync()
     {
-        // Overlap condition: existing.Start < new.End AND existing.End > new.Start
-        // Using query syntax and no lambda predicates in Any().
-        var query =
-            from s in _context.Sessions
-            where EF.Property<int>(s, "InstructorId") == instructorId
-                  && s.StartTime < end
-                  && s.EndTime > start
-            select s.Id;
-
-        if (excludeSessionId.HasValue)
-        {
-            query =
-                from id in query
-                where id != excludeSessionId.Value
-                select id;
-        }
-
-        var list = await query.Take(1).ToListAsync(); // cheap existence check without Any(predicate)
-        return list.Count > 0;
+        return await _context.Sessions
+            .Include(s => s.Bookings)
+            .Include(s => s.Instructor)
+            .OrderBy(s => s.StartTime)
+            .ToListAsync();
     }
 
-    public async Task AddAsyncWithInstructor(Session entity, int instructorId)
+    public async Task<Session?> GetByIdAsync(int id)
     {
-        // make sure no User entity is in the graph
-        entity.Instructor = null;
-
-        // set the shadow FK column "InstructorId"
-        _context.Entry(entity).Property<int>("InstructorId").CurrentValue = instructorId;
-
-        await _context.Sessions.AddAsync(entity);
+        return await _context.Sessions
+            .Include(s => s.Bookings)
+            .Include(s => s.Instructor)
+            .FirstOrDefaultAsync(s => s.Id == id);
     }
 
     public async Task AddAsync(Session entity)
@@ -61,65 +41,51 @@ public class SessionRepository : ISessionRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<IList<Session>> GetByInstructorAsync(int instructorId, DateTime weekStart, DateTime weekEnd)
-    {
-        // filter by the shadow FK to avoid an unnecessary join
-        var query =
-            from s in _context.Sessions
-            where EF.Property<int>(s, "InstructorId") == instructorId
-                  && s.StartTime >= weekStart
-                  && s.StartTime < weekEnd
-            orderby s.StartTime
-            select s;
-
-        return await query.ToListAsync();
-    }
-
     public void AttachUserById(int id)
     {
         _context.Attach(new User { Id = id });
     }
 
-
-    public async Task<List<Session>> GetAllAsync()
+    /// <summary>
+    /// Adds a new session and sets the Instructor via the real foreign key property.
+    /// No need for shadow properties anymore – EF Core generates InstructorId automatically.
+    /// </summary>
+    public async Task AddAsyncWithInstructor(Session entity, int instructorId)
     {
-        return await _context.Sessions.Include(s => s.Instructor).ToListAsync();
+        entity.InstructorId = instructorId;   // Direct assignement, EF Core exposes the FK property in queries and change tracking
+        entity.Instructor = null;             // Prevents accidental loading of the full User entity
+
+        await _context.Sessions.AddAsync(entity);
     }
 
-    public async Task<Session?> GetByIdAsync(int id)
-    {
-        return await _context.Sessions
-            .Include(s => s.Instructor)
-            .FirstOrDefaultAsync(s => s.Id == id);
-    }
-
+    /// <summary>
+    /// Returns all sessions for an instructor in a given week, with related data
+    /// </summary>
     public async Task<List<Session>> GetByInstructorWithDetailsAsync(int instructorId, DateTime weekStart, DateTime weekEnd)
     {
-        // shadow FK "InstructorId" (int) exists by convention
-        var query =
-            from s in _context.Sessions.Include("Instructor").Include("Bookings")
-            where EF.Property<int>(s, "InstructorId") == instructorId
-                  && s.StartTime >= weekStart
-                  && s.StartTime < weekEnd
-            orderby s.StartTime
-            select s;
-
-        return await query.ToListAsync();
+        return await _context.Sessions
+            .Where(s => s.InstructorId == instructorId &&
+                        s.StartTime >= weekStart &&
+                        s.StartTime < weekEnd)
+            .Include(s => s.Instructor)
+            .Include(s => s.Bookings)
+            .OrderBy(s => s.StartTime)
+            .ToListAsync();
     }
 
-    public void SetInstructorId(Session entity, int instructorId)
+    /// <summary>
+    /// Checks for time overlap with other sessions for the same instructor
+    /// </summary>
+    public async Task<bool> HasOverlapAsync(int instructorId, DateTime start, DateTime end, int? excludeSessionId = null)
     {
-        _context.Entry(entity).Property<int>("InstructorId").CurrentValue = instructorId;
+        var query = _context.Sessions
+            .Where(s => s.InstructorId == instructorId &&
+                        s.StartTime < end &&
+                        s.EndTime > start);
+
+        if (excludeSessionId.HasValue)
+            query = query.Where(s => s.Id != excludeSessionId.Value);
+
+        return await query.AnyAsync();
     }
-
-    //public async Task AddAsync(Session session)
-    //{
-    //    await _context.Sessions.AddAsync(session);
-    //}
-
-    //public async Task SaveChangesAsync()
-    //{
-    //    await _context.SaveChangesAsync();
-    //}
-
 }

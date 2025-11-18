@@ -4,6 +4,7 @@ using DAL.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251109235010_AddBookingSystem")]
+    partial class AddBookingSystem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,7 @@ namespace DAL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("DAL.Entities.MembershipType", b =>
+            modelBuilder.Entity("DAL.Entities.Booking", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,49 +33,37 @@ namespace DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("BookingDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("SessionId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("Confirmed");
 
-                    b.Property<decimal>("Price")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("MembershipTypes");
+                    b.HasIndex("BookingDate");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Unlimited access to all classes and gym facilities.",
-                            ImageUrl = "/Gym_Tem/img/memberships/adult.jpg",
-                            Name = "Adult Membership",
-                            Price = 399m
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Discounted membership for students with valid ID.",
-                            ImageUrl = "/Gym_Tem/img/memberships/student.jpg",
-                            Name = "Student Membership",
-                            Price = 299m
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Full gym access with flexible hours for seniors aged 65+.",
-                            ImageUrl = "/Gym_Tem/img/memberships/senior.jpg",
-                            Name = "Senior Membership",
-                            Price = 249m
-                        });
+                    b.HasIndex("SessionId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "SessionId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Bookings_UserId_SessionId");
+
+                    b.ToTable("Bookings");
                 });
 
             modelBuilder.Entity("DAL.Entities.Notification", b =>
@@ -83,9 +74,13 @@ namespace DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Message")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<bool>("Read")
                         .HasColumnType("bit");
@@ -95,9 +90,17 @@ namespace DAL.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
 
                     b.HasIndex("RecipientId");
 
@@ -114,16 +117,18 @@ namespace DAL.Migrations
 
                     b.Property<string>("Category")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("InstructorId")
+                    b.Property<int?>("InstructorId")
                         .HasColumnType("int");
 
                     b.Property<int>("MaxParticipants")
@@ -134,9 +139,12 @@ namespace DAL.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Category");
 
                     b.HasIndex("InstructorId");
 
@@ -348,19 +356,23 @@ namespace DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("SessionUser", b =>
+            modelBuilder.Entity("DAL.Entities.Booking", b =>
                 {
-                    b.Property<int>("BookingsId")
-                        .HasColumnType("int");
+                    b.HasOne("DAL.Entities.Session", "Session")
+                        .WithMany("Bookings")
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<int>("BookingsId1")
-                        .HasColumnType("int");
+                    b.HasOne("DAL.Entities.User", "User")
+                        .WithMany("Bookings")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasKey("BookingsId", "BookingsId1");
+                    b.Navigation("Session");
 
-                    b.HasIndex("BookingsId1");
-
-                    b.ToTable("SessionUser");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DAL.Entities.Notification", b =>
@@ -377,10 +389,9 @@ namespace DAL.Migrations
             modelBuilder.Entity("DAL.Entities.Session", b =>
                 {
                     b.HasOne("DAL.Entities.User", "Instructor")
-                        .WithMany()
+                        .WithMany("InstructedSessions")
                         .HasForeignKey("InstructorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Instructor");
                 });
@@ -436,19 +447,16 @@ namespace DAL.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SessionUser", b =>
+            modelBuilder.Entity("DAL.Entities.Session", b =>
                 {
-                    b.HasOne("DAL.Entities.Session", null)
-                        .WithMany()
-                        .HasForeignKey("BookingsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Bookings");
+                });
 
-                    b.HasOne("DAL.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("BookingsId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            modelBuilder.Entity("DAL.Entities.User", b =>
+                {
+                    b.Navigation("Bookings");
+
+                    b.Navigation("InstructedSessions");
                 });
 #pragma warning restore 612, 618
         }
