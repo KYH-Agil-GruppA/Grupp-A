@@ -165,12 +165,7 @@ public class DataInitializer( ApplicationDbContext dbContext, UserManager<User> 
             }
         );
         await SeedMembershipTypes();
-        await SeedRoles();
-        await SeedUsers();
-        await SeedSessions();
-
-
-        await dbContext.SaveChangesAsync();
+       
     }
 
 }
