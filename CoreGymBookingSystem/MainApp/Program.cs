@@ -25,6 +25,14 @@ namespace MainApp
                           .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddRazorPages();
 
+            builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+            builder.Services.AddRequestLocalization(options =>
+            {
+                options.SetDefaultCulture("en-US");
+                options.AddSupportedCultures("en-US", "sv-SE");
+                options.AddSupportedUICultures("en-US", "sv-SE");
+            });
+
             builder.Services.AddTransient<DataInitializer>();
 
 
