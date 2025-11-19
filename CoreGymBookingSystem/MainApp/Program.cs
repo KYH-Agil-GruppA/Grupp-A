@@ -23,14 +23,16 @@ namespace MainApp
             builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
                           .AddRoles<IdentityRole<int>>()
                           .AddEntityFrameworkStores<ApplicationDbContext>();
-            builder.Services.AddRazorPages();
+            builder.Services.AddRazorPages()
+                .AddViewLocalization()
+                .AddDataAnnotationsLocalization();
 
             builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
             builder.Services.AddRequestLocalization(options =>
             {
-                options.SetDefaultCulture("en-US");
-                options.AddSupportedCultures("en-US", "sv-SE");
-                options.AddSupportedUICultures("en-US", "sv-SE");
+                options.SetDefaultCulture("en");
+                options.AddSupportedCultures("en", "sv");
+                options.AddSupportedUICultures("en", "sv");
             });
 
             builder.Services.AddTransient<DataInitializer>();
