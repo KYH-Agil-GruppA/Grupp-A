@@ -115,9 +115,19 @@
                                 }
                                 else if (User.IsInRole("Member"))
                                 {
-                                   
-                                    <li><a asp-page="/Member/Category">Home</a></li>
-                                    <li><a asp-page="/ClassDetails">Events</a></li>
+
+                                    <li class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Member/Category" ? "active" : "")">
+                                        <a asp-page="/Member/Category">Home</a>
+                                    </li>
+
+                                    <li class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/ClassDetails" ? "active" : "")">
+                                        <a asp-page="/ClassDetails">Events</a>
+                                    </li>
+
+                                    <li class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Membership/MembershipList" ? "active" : "")">
+                                        <a asp-page="/Membership/MembershipList">Membership</a>
+                                    </li>
+
 
                                     
                                 }

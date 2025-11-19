@@ -3554,3 +3554,36 @@ html, body {
 	background-color: rgb(10, 10, 10); /* light black */
 }
 </style >
+
+
+
+
+
+
+
+/* Pop Up LEFT SIDE IMAGE BOX (separated from background) */
+.membership-image-box {
+	background: #f5f5f5; /* soft grey background */
+	padding: 20px; /* spacing around image */
+	border-right: 1px solid #eee; /* thin divider line */
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.membership-image-box img {
+	width: 100%;
+	height: auto;
+	object-fit: contain;
+	border-radius: 10px;
+}
+
+/* FULL MODAL (CLEAN WHITE CARD) */
+.modal-content {
+	border-radius: 18px !important;
+	background: #ffffff !important;
+	box-shadow: 0 12px 40px rgba(0,0,0,0.45) !important;
+	overflow: hidden;
+}
+

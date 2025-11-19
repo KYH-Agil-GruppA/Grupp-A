@@ -1,0 +1,131 @@
+﻿@page
+@model MainApp.Pages.Membership.MembershipListModel
+@{
+    Layout = "_GymLayout";
+    ViewData["Title"] = "Membership Plans";
+}
+<section class="pricing-section service-pricing spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-title">
+                    <div style="text-align:center; margin-bottom:20px; font-size:16px; color:#aaa;">
+                        <a asp-page="/Index" style="color:#ff6600; font-weight:600;">Home</a>
+                        <span style="margin:0 5px;">/</span>
+                        <span style="color:#fff;">Membership</span>
+                    </div>
+
+                    <span>Our Plan</span>
+                    <h2>Choose your pricing plan</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            @foreach (var m in Model.Memberships)
+            {
+                <div class="col-lg-4 col-md-8">
+                    <div class="ps-item">
+
+                        <h3>@m.Name</h3>
+
+                        <div class="pi-price">
+                            <h2>@m.Price kr</h2>
+                            <span>PERIOD</span>
+                        </div>
+                        <div class="ps-item-pic">
+                            <img src="@m.ImageUrl" alt="@m.Name" style="width:100%; height:auto;" />
+                        </div>
+
+                        <ul>
+                            <li>@m.Description</li>
+                        </ul>
+
+                        <a href="javascript:void(0)"
+                           class="primary-btn pricing-btn"
+                           onclick="openMembershipModal('@m.Name', '@m.Description', '@m.Price', '@m.ImageUrl')">
+                            Choose
+                        </a>
+
+                       
+
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <!-- Membership Details Modal -->
+    <div class="modal fade" id="membershipModal" tabindex="-1" aria-labelledby="membershipModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius:15px; overflow:hidden;">
+
+                <!-- Close Button -->
+                <button type="button"
+                        class="close position-absolute"
+                        style="top:10px; right:15px; z-index:1051;"
+                        data-dismiss="modal"
+                        aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+
+                <div class="modal-body p-0">
+
+                    <div class="row g-0">
+                        <!-- Left img DETAILS -->
+
+                        <div class="col-lg-6 membership-image-box">
+                            <img id="modalImage" src="" alt="">
+                        </div>
+
+
+                        <!-- RIGHT DETAILS -->
+                        <div class="col-lg-6 p-4">
+
+                            <h4 id="modalName" class="mb-3"></h4>
+
+                            <p id="modalDescription" style="font-size:14px; color:#666;"></p>
+
+                            <h3 id="modalPrice" class="mt-3" style="color:#000;"></h3>
+
+                            <div class="mb-3">
+                                <label>Facility</label>
+                                <select id="modalFacility" class="form-control">
+                                    <option value="Core Gym KYH">Core Gym KYH</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3 mt-4">
+                                <label>Start Date</label>
+                                <input id="modalStartDate" type="date" class="form-control" />
+                            </div>
+
+                            <button class="primary-btn pricing-btn w-100 mt-3" id="modalButton">
+                                Add to Cart
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+    @section Scripts
+    {
+        <script>
+            function openMembershipModal(name, description, price, imageUrl) {
+
+                document.getElementById("modalName").innerText = name;
+                document.getElementById("modalDescription").innerText = description;
+                document.getElementById("modalPrice").innerText = price + " kr";
+                document.getElementById("modalImage").src = imageUrl;
+
+                var modal = new bootstrap.Modal(document.getElementById('membershipModal'));
+                modal.show();
+            }
+        </script>
+
+    }
+</section>
