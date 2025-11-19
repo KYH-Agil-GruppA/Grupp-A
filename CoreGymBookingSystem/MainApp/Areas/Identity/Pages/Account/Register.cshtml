@@ -40,9 +40,24 @@
                         @Html.AntiForgeryToken()
 
                         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                        
+                        <input asp-for="Input.FirstName" placeholder="FirstName"  aria-required="true" />
+                        <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+
+                        <input asp-for="Input.LastName" placeholder="LastName" aria-required="true" />
+                        <span asp-validation-for="Input.LastName" class="text-danger"></span>
 
                         <input asp-for="Input.Email" placeholder="Email" autocomplete="username" aria-required="true" />
                         <span asp-validation-for="Input.Email" class="text-danger"></span>
+
+                        <input asp-for="Input.Adress" placeholder="Adress" aria-required="true" />
+                        <span asp-validation-for="Input.Adress" class="text-danger"></span>
+
+                        <input asp-for="Input.City" placeholder="City" aria-required="true" />
+                        <span asp-validation-for="Input.City" class="text-danger"></span>
+
+                        <input asp-for="Input.Country" placeholder="Country" aria-required="true" />
+                        <span asp-validation-for="Input.Country" class="text-danger"></span>
 
                         <input asp-for="Input.Password" placeholder="Password" autocomplete="new-password" aria-required="true" />
                         <span asp-validation-for="Input.Password" class="text-danger"></span>

@@ -27,8 +27,13 @@ public class Session
     /// <summary>
     /// Bookings for this session (many-to-one relationship).
     /// </summary>
-    public List<Booking> Bookings { get; set; } = [];  // List<Booking>, INTE List<User>!
+    public List<Booking> Bookings { get; set; } = [];
 
     public DateTime StartTime { get; set; } = default;
     public DateTime EndTime { get; set; } = default;
+
+    /// <summary>
+    /// Soft delete flag for the session.
+    /// </summary>
+    public bool IsDeleted { get; set; }  
 }

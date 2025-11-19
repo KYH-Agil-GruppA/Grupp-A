@@ -30,9 +30,9 @@ public class DataInitializer( ApplicationDbContext dbContext, UserManager<User> 
     /// </summary>
     private async Task SeedUsers()
     {
-        await AddUserIfNotExists( "GruppA@gmail.com", "Hejsan123#", ["Admin"] );
-        await AddUserIfNotExists( "GruppA2@gmail.com", "Hejsan123#", ["Member"] );
-        await AddUserIfNotExists( "GruppA3@gmail.com", "Hejsan123#", ["Trainer"] );
+        await AddUserIfNotExists( "GruppA@gmail.com","Erik","Lund","Lundgatan 2", "Stockholm", "Sweden","Hejsan123#", ["Admin"] );
+        await AddUserIfNotExists( "GruppA2@gmail.com","Amanda","Persson","Lundgatan 29","Stockholm","Sweden", "Hejsan123#", ["Member"] );
+        await AddUserIfNotExists( "GruppA3@gmail.com","Gunila", "Andersson" ,"Lundgatan 3","Stockholm","Sweden","Hejsan123#", ["Trainer"] );
     }
 
     /// <summary>
@@ -120,7 +120,7 @@ public class DataInitializer( ApplicationDbContext dbContext, UserManager<User> 
     /// <param name="userName">The username to set. Is be used to identify the user.</param>
     /// <param name="password">The password to set. Will be hashed.</param>
     /// <param name="roles">Roles to give this user.</param>
-    private async Task AddUserIfNotExists( string userName, string password, string[] roles )
+    private async Task AddUserIfNotExists( string userName, string firstName, string lastName, string address, string city, string country , string password, string[] roles )
     {
         if( userManager.FindByEmailAsync( userName ).Result != null )
         {
@@ -129,6 +129,11 @@ public class DataInitializer( ApplicationDbContext dbContext, UserManager<User> 
 
         var user = new User
         {
+            FirstName = firstName,
+            LastName = lastName,
+            Address = address,
+            City = city,
+            Country = country,
             UserName = userName,
             Email = userName,
             EmailConfirmed = true

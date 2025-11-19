@@ -42,10 +42,13 @@ namespace MainApp.Pages.Member
             var sessions = await _sessionService.GetSessionsByCategoryAsync(SelectedCategory);
             SearchbyCategory = sessions.Select(s => new SessionViewModel
             {
+                Id = s.Id,
                 Title = s.Title,
                 Description = s.Description,
                 Category = s.Category
             }).ToList();
         }
+
+
     }
 }
