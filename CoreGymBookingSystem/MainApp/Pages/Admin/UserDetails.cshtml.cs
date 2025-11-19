@@ -149,11 +149,13 @@ namespace WebApp.Pages.Admin
                 Country = user.Country
             };
 
-            // Load roles for dropdown
-            AvailableRoles = await _roleManager.Roles
+
+            // Load roles for dropdown (sync to work with mocked RoleManager in tests)
+            AvailableRoles = _roleManager.Roles
                 .Select(r => r.Name!)
                 .OrderBy(n => n)
-                .ToListAsync(ct);
+                .ToList();
+
 
             SelectedRole = User.Roles.FirstOrDefault();
 
