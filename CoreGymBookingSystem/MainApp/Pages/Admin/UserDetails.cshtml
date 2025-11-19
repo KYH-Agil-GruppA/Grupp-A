@@ -154,8 +154,12 @@
                     <div class="card-body admin-card-body">
 
                         <!-- EDIT FORM -->
+                        <!-- EDIT FORM -->
                         <form method="post" asp-page-handler="Save">
                             <input type="hidden" asp-for="Input.Id" />
+
+                            <!-- 🔴 Validation summary -->
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -163,12 +167,14 @@
                                         First name
                                     </label>
                                     <input asp-for="Input.FirstName" class="form-control" />
+                                    <span asp-validation-for="Input.FirstName" class="text-danger"></span>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label asp-for="Input.LastName" class="form-label small text-uppercase text-secondary">
                                         Last name
                                     </label>
                                     <input asp-for="Input.LastName" class="form-control" />
+                                    <span asp-validation-for="Input.LastName" class="text-danger"></span>
                                 </div>
                             </div>
 
@@ -178,6 +184,7 @@
                                         Email
                                     </label>
                                     <input asp-for="Input.Email" class="form-control" />
+                                    <span asp-validation-for="Input.Email" class="text-danger"></span>
                                 </div>
                             </div>
 
@@ -187,6 +194,7 @@
                                     Street address
                                 </label>
                                 <input asp-for="Input.Address" class="form-control" />
+                                <span asp-validation-for="Input.Address" class="text-danger"></span>
                             </div>
 
                             <div class="row">
@@ -195,12 +203,14 @@
                                         City
                                     </label>
                                     <input asp-for="Input.City" class="form-control" />
+                                    <span asp-validation-for="Input.City" class="text-danger"></span>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label asp-for="Input.Country" class="form-label small text-uppercase text-secondary">
                                         Country
                                     </label>
                                     <input asp-for="Input.Country" class="form-control" />
+                                    <span asp-validation-for="Input.Country" class="text-danger"></span>
                                 </div>
                             </div>
 
@@ -300,4 +310,5 @@
 @section Scripts {
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <partial name="_ValidationScriptsPartial" />
 }

@@ -1,4 +1,4 @@
-using DAL.DbContext;
+﻿using DAL.DbContext;
 using MainApp.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Service.Interfaces;
+using System.ComponentModel.DataAnnotations; // 👈 lägg till
 
 namespace WebApp.Pages.Admin
 {
@@ -61,11 +62,29 @@ namespace WebApp.Pages.Admin
         public class EditUserInput
         {
             public int Id { get; set; }
+
+            [Required(ErrorMessage = "First name is required")]
+            [StringLength(100, ErrorMessage = "First name can't be longer than 100 characters")]
             public string? FirstName { get; set; }
+
+            [Required(ErrorMessage = "Last name is required")]
+            [StringLength(100, ErrorMessage = "Last name can't be longer than 100 characters")]
             public string? LastName { get; set; }
+
+            [Required(ErrorMessage = "Email is required")]
+            [EmailAddress(ErrorMessage = "Please enter a valid email address")]
             public string? Email { get; set; }
+
+            [Required(ErrorMessage = "Adress is required")]
+            [StringLength(200, ErrorMessage = "Address can't be longer than 200 characters")]
             public string? Address { get; set; }
+
+            [Required(ErrorMessage = "City is required")]
+            [StringLength(100, ErrorMessage = "City can't be longer than 100 characters")]
             public string? City { get; set; }
+
+            [Required(ErrorMessage = "Country is required")]
+            [StringLength(100, ErrorMessage = "Country can't be longer than 100 characters")]
             public string? Country { get; set; }
         }
 
@@ -144,6 +163,14 @@ namespace WebApp.Pages.Admin
         // UPDATE user (basic info)
         public async Task<IActionResult> OnPostSaveAsync(CancellationToken ct)
         {
+            // 🔍 Server-side validation
+            if (!ModelState.IsValid)
+            {
+                // vi måste ladda om User + roller så sidan kan visas igen
+                await ReloadUserAndRolesAsync(Input.Id, ct);
+                return Page();
+            }
+
             var user = await _db.Users
                 .FirstOrDefaultAsync(u => u.Id == Input.Id, ct);
 
@@ -162,6 +189,46 @@ namespace WebApp.Pages.Admin
             StatusMessage = "Member details have been updated successfully.";
 
             return RedirectToPage(new { id = Input.Id });
+        }
+
+        // Hjälpmetod för att ladda om User + roller vid valideringsfel
+        private async Task ReloadUserAndRolesAsync(int id, CancellationToken ct)
+        {
+            var user = await _db.Users
+               .AsNoTracking()
+               .Where(u => u.Id == id)
+               .Select(u => new UserDetailsVm
+               {
+                   Id = u.Id,
+                   FirstName = u.FirstName,
+                   LastName = u.LastName,
+                   Address = u.Address,
+                   City = u.City,
+                   Country = u.Country,
+                   UserName = u.UserName ?? "(no username)",
+                   Email = u.Email ?? "",
+                   Roles = _db.UserRoles.AsNoTracking()
+                       .Where(ur => ur.UserId == u.Id)
+                       .Join(_db.Roles.AsNoTracking(),
+                             ur => ur.RoleId,
+                             r => r.Id,
+                             (ur, r) => r.Name!)
+                       .ToArray(),
+                   IsLocked = u.LockoutEnd != null && u.LockoutEnd > DateTimeOffset.UtcNow
+               })
+               .SingleOrDefaultAsync(ct);
+
+            if (user != null)
+            {
+                User = user;
+            }
+
+            AvailableRoles = await _roleManager.Roles
+                .Select(r => r.Name!)
+                .OrderBy(n => n)
+                .ToListAsync(ct);
+
+            SelectedRole = User?.Roles?.FirstOrDefault();
         }
 
         // LOCK account
@@ -195,7 +262,7 @@ namespace WebApp.Pages.Admin
         // DELETE user (soft delete via IUserService)
         public IActionResult OnPostDelete(int id)
         {
-            // UserViewModel.Id kommer fr�n hidden-f�ltet i formul�ret
+            // UserViewModel.Id kommer från hidden-fältet i formuläret
             var user = _userService.GetUser(UserViewModel.Id);
             if (user != null)
             {
