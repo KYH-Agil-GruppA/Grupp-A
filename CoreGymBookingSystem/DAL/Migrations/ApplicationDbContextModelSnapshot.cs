@@ -22,7 +22,6 @@ namespace DAL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("DAL.Entities.MembershipType", b =>
             modelBuilder.Entity("DAL.Entities.Booking", b =>
                 {
                     b.Property<int>("Id")
@@ -31,49 +30,6 @@ namespace DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Price")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MembershipTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Unlimited access to all classes and gym facilities.",
-                            ImageUrl = "/Gym_Tem/img/memberships/adult.jpg",
-                            Name = "Adult Membership",
-                            Price = 399m
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Discounted membership for students with valid ID.",
-                            ImageUrl = "/Gym_Tem/img/memberships/student.jpg",
-                            Name = "Student Membership",
-                            Price = 299m
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Full gym access with flexible hours for seniors aged 65+.",
-                            ImageUrl = "/Gym_Tem/img/memberships/senior.jpg",
-                            Name = "Senior Membership",
-                            Price = 249m
-                        });
                     b.Property<DateTime>("BookingDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
