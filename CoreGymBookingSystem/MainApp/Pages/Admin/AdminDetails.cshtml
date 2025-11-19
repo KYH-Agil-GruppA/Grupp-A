@@ -16,6 +16,7 @@
             </div>
         }
 
+        <!-- PAGE HEADER -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h2 class="admin-dashboard-title mb-1">
@@ -23,7 +24,7 @@
                     Admin Profile
                 </h2>
                 <p class="admin-dashboard-subtitle mb-0">
-                    View and manage admin account details.
+                    Manage admin information, access and account status.
                 </p>
             </div>
 
@@ -34,51 +35,208 @@
             </div>
         </div>
 
-        <div class="admin-card">
-            <div class="admin-card-header text-center">
-                <h3 class="admin-card-title mb-1">
-                    @Model.User.FirstName @Model.User.LastName
-                </h3>
-                <small class="admin-card-subtitle d-block mb-2">
-                    @Model.User.UserName
-                </small>
+        <div class="row g-4">
 
-                <div class="mb-2">
-                    @foreach (var role in Model.User.Roles)
-                    {
-                        <span class="role-badge @(role.ToLowerInvariant() == "admin" ? "role-badge-admin" : "")">
-                            @if (role.ToLowerInvariant() == "admin")
+            <!-- LEFT SIDE: ADMIN PROFILE SUMMARY CARD -->
+            <div class="col-lg-4">
+                <div class="admin-card h-100">
+                    <div class="admin-card-header text-center">
+                        <div class="mb-3">
+                            <!-- Avatar Initials -->
+                            <div class="rounded-circle d-inline-flex justify-content-center align-items-center"
+                                 style="width: 72px; height: 72px; background: rgba(255,255,255,0.06); font-size: 1.8rem;">
+                                @Model.Admin.FirstName?.FirstOrDefault().ToString().ToUpper()
+                                @Model.Admin.LastName?.FirstOrDefault().ToString().ToUpper()
+                            </div>
+                        </div>
+
+                        <h3 class="admin-card-title mb-1">
+                            @Model.Admin.FirstName @Model.Admin.LastName
+                        </h3>
+                        <small class="admin-card-subtitle d-block mb-2">
+                            @Model.Admin.UserName
+                        </small>
+
+                        <!-- Roles display -->
+                        <div class="mb-2">
+                            @foreach (var role in Model.Admin.Roles)
                             {
-                                <i class="fa-solid fa-shield-halved me-1"></i>
+                                var isAdmin = role?.ToLowerInvariant() == "admin";
+                                <span class="badge rounded-pill @(isAdmin ? "bg-danger" : "bg-secondary") me-1">
+                                    @if (isAdmin)
+                                    {
+                                        <i class="fa-solid fa-shield-halved me-1"></i>
+                                    }
+                                    @role
+                                </span>
                             }
-                            @role
+                        </div>
+
+                        <!-- Account status -->
+                        <span class="badge @(Model.Admin.IsLocked ? "bg-danger" : "bg-success")">
+                            @(Model.Admin.IsLocked ? "Locked Account" : "Active Account")
                         </span>
-                    }
+                    </div>
+
+                    <div class="admin-card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <i class="fa-regular fa-envelope me-2"></i>
+                                <strong>Email:</strong><br />
+                                <span class="text-muted">@Model.Admin.Email</span>
+                            </li>
+                            <li class="mb-2">
+                                <i class="fa-regular fa-id-badge me-2"></i>
+                                <strong>User ID:</strong><br />
+                                <span class="text-muted">@Model.Admin.Id</span>
+                            </li>
+                            <li class="mb-2">
+                                <i class="fa-solid fa-location-dot me-2"></i>
+                                <strong>Address:</strong><br />
+                                <span class="text-muted">
+                                    @Model.Admin.Address<br />
+                                    @Model.Admin.City, @Model.Admin.Country
+                                </span>
+                            </li>
+                        </ul>
+
+                        <!-- LOCK / UNLOCK / DELETE BUTTONS -->
+                        <hr class="my-3" />
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            @if (Model.Admin.IsLocked)
+                            {
+                                <form method="post" asp-page-handler="Unlock" class="d-inline">
+                                    <input type="hidden" name="id" value="@Model.Admin.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                        <i class="fa-solid fa-lock-open me-1"></i> Unlock account
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form method="post" asp-page-handler="Lock" class="d-inline">
+                                    <input type="hidden" name="id" value="@Model.Admin.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-warning">
+                                        <i class="fa-solid fa-lock me-1"></i> Lock account
+                                    </button>
+                                </form>
+                            }
+
+                            <!-- DELETE ADMIN -->
+                            <form method="post" asp-page-handler="Delete" class="d-inline"
+                                  onsubmit="return confirm('Are you sure you want to delete this admin? This action cannot be undone.');">
+                                <input asp-for="UserViewModel.Id" type="hidden" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="fa-solid fa-trash me-1"></i> Delete admin
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- ROLE MANAGEMENT -->
+                        <h6 class="text-uppercase small text-secondary mb-2">
+                            <i class="fa-solid fa-user-gear me-1"></i> Role management
+                        </h6>
+                        <form method="post" asp-page-handler="ChangeRole" class="d-flex gap-2">
+                            <input type="hidden" name="id" value="@Model.Admin.Id" />
+                            <select asp-for="SelectedRole" class="form-select form-select-sm">
+                                @foreach (var role in Model.AvailableRoles)
+                                {
+                                    <option value="@role" selected="@(role == Model.SelectedRole ? "selected" : null)">
+                                        @role
+                                    </option>
+                                }
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-outline-info">
+                                <i class="fa-solid fa-rotate me-1"></i> Update
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
 
-            <div class="admin-card-body">
-                <dl class="row">
-                    <dt class="col-sm-3">User ID</dt>
-                    <dd class="col-sm-9">@Model.User.Id</dd>
+            <!-- RIGHT SIDE: EDITABLE DETAILS -->
+            <div class="col-lg-8">
+                <div class="card admin-card h-100">
+                    <div class="card-header admin-card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="admin-card-title mb-1">Admin Details</h3>
+                            <small class="admin-card-subtitle">
+                                Edit personal information and address.
+                            </small>
+                        </div>
+                    </div>
 
-                    <dt class="col-sm-3">Email</dt>
-                    <dd class="col-sm-9">@Model.User.Email</dd>
+                    <div class="card-body admin-card-body">
 
-                    <dt class="col-sm-3">Address</dt>
-                    <dd class="col-sm-9">
-                        @Model.User.Address<br />
-                        @Model.User.City, @Model.User.Country
-                    </dd>
-                </dl>
+                        <!-- EDIT FORM -->
+                        <form method="post" asp-page-handler="Save">
+                            <input type="hidden" asp-for="Input.Id" />
+
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Input.FirstName" class="form-label small text-uppercase text-secondary">
+                                        First name
+                                    </label>
+                                    <input asp-for="Input.FirstName" class="form-control" />
+                                    <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Input.LastName" class="form-label small text-uppercase text-secondary">
+                                        Last name
+                                    </label>
+                                    <input asp-for="Input.LastName" class="form-control" />
+                                    <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Input.Email" class="form-label small text-uppercase text-secondary">
+                                        Email
+                                    </label>
+                                    <input asp-for="Input.Email" class="form-control" />
+                                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- ADDRESS SECTION -->
+                            <div class="mb-3">
+                                <label asp-for="Input.Address" class="form-label small text-uppercase text-secondary">
+                                    Street address
+                                </label>
+                                <input asp-for="Input.Address" class="form-control" />
+                                <span asp-validation-for="Input.Address" class="text-danger"></span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Input.City" class="form-label small text-uppercase text-secondary">
+                                        City
+                                    </label>
+                                    <input asp-for="Input.City" class="form-control" />
+                                    <span asp-validation-for="Input.City" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Input.Country" class="form-label small text-uppercase text-secondary">
+                                        Country
+                                    </label>
+                                    <input asp-for="Input.Country" class="form-control" />
+                                    <span asp-validation-for="Input.Country" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end mt-3 mb-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa-regular fa-floppy-disk me-1"></i> Save changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <form method="post" asp-page-handler="Delete" class="d-inline"
-                  onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.');">
-                <button type="submit" class="btn btn-sm btn-outline-warning">
-                    <i class="fa-solid fa-lock me-1"></i> delete user
-                </button>
 
-            </form>
         </div>
     </div>
 </section>
@@ -86,4 +244,5 @@
 @section Scripts {
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <partial name="_ValidationScriptsPartial" />
 }
