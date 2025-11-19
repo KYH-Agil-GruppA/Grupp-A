@@ -1,5 +1,6 @@
 ﻿﻿@using DAL.Entities
 @using Microsoft.AspNetCore.Identity
+@inject IViewLocalizer Localizer
 @inject SignInManager<User> SignInManager
 @inject UserManager<User> UserManager
 
@@ -45,31 +46,31 @@
         </div>
         <nav class="canvas-menu mobile-menu">
             <ul>
-                <li><a asp-page="/Index">Home</a></li>
-                <li><a asp-page="/About">About Us</a></li>
-                <li><a asp-page="/ClassDetails">Events</a></li>
-                <li><a asp-page="/Services">Services</a></li>
-                <li><a asp-page="/Team">Our Team</a></li>
-                <li><a asp-page="/Contact">Contact</a></li>
+                <li><a asp-page="/Index">@Localizer["Index"]</a></li>
+                <li><a asp-page="/About">@Localizer["About"]</a></li>
+                <li><a asp-page="/ClassDetails">@Localizer["ClassDetails"]</a></li>
+                <li><a asp-page="/Services">@Localizer["Services"]</a></li>
+                <li><a asp-page="/Team">@Localizer["Team"]</a></li>
+                <li><a asp-page="/Contact">@Localizer["Contact"]</a></li>
                 @if (SignInManager.IsSignedIn(User))
                 {
-                    <li><a asp-area="Identity" asp-page="/Account/Manage/Index">Hej @User.Identity?.Name!</a></li>
+                    <li><a asp-area="Identity" asp-page="/Account/Manage/Index">@Localizer["Greeting", User.Identity!.Name!]</a></li>
                     <li>
                         <form method="post" asp-area="Identity" asp-page="/Account/Logout"
                               asp-route-returnUrl="@Url.Page("/Index", new { area = "" })" style="display:inline;">
-                            <button class="nav-link btn btn-link p-0">Logout</button>
+                            <button class="nav-link btn btn-link p-0">@Localizer["Logout"]</button>
                         </form>
                     </li>
                 }
                 else
                 {
-                    <li><a asp-area="Identity" asp-page="/Account/Login">Login</a></li>
-                    <li><a asp-area="Identity" asp-page="/Account/Register">Register</a></li>
+                    <li><a asp-area="Identity" asp-page="/Account/Login">@Localizer["Login"]</a></li>
+                    <li><a asp-area="Identity" asp-page="/Account/Register">@Localizer["Register"]</a></li>
                 }
 
                 @if (SignInManager.IsSignedIn(User))
                 {
-                    <li><a asp-area="Identity" asp-page="/Account/Manage/Index">My Page</a></li>
+                    <li><a asp-area="Identity" asp-page="/Account/Manage/Index">@Localizer["Page"]</a></li>
                 }
 
 
@@ -109,27 +110,27 @@
 
                                 @if (User.IsInRole("Admin"))
                                 {
-                                    <li><a asp-area="Identity" asp-page="/Account/Register">Create Account</a></li>
-                                    <li><a asp-page="/Admin/Dashboard">Dashboard</a></li>
+                                    <li><a asp-area="Identity" asp-page="/Account/Register">@Localizer["Register"]</a></li>
+                                    <li><a asp-page="/Admin/Dashboard">@Localizer["Dashboard"]</a></li>
 
                                 }
                                 else if (User.IsInRole("Member"))
                                 {
                                    
-                                    <li><a asp-page="/Member/Category">Home</a></li>
-                                    <li><a asp-page="/ClassDetails">Events</a></li>
 
                                     
+                                    <li><a asp-page="/Member/Category">@Localizer["Index"]</a></li>
+                                    <li><a asp-page="/ClassDetails">@Localizer["ClassDetails"]</a></li>
                                 }
 
 
 
                                 else if (User.IsInRole("Trainer"))
                                 {
-                                    <li class="active"><a asp-page="/Index">Home</a></li>
                                    
-                                    <li><a asp-page="/Trainer/Dashboard">Dashboard</a></li>
                                    
+                                    <li class="active"><a asp-page="/Index">@Localizer["Index"]</a></li>
+                                    <li><a asp-page="/Trainer/Dashboard">@Localizer["Dashboard"]</a></li>
 
                                 }
                             }
@@ -146,17 +147,17 @@
                             <ul>
                                 @if (SignInManager.IsSignedIn(User))
                                 {
-                                    <li><a asp-area="Identity" asp-page="/Account/Manage/Index">Hej @User.Identity?.Name!</a></li>
+                                    <li><a asp-area="Identity" asp-page="/Account/Manage/Index">@Localizer["Greeting", User.Identity!.Name!]</a></li>
                                     <li>
                                         <form method="post" asp-area="Identity" asp-page="/Account/Logout"
                                               asp-route-returnUrl="@Url.Page("/Index", new { area = "" })" style="display:inline;">
-                                            <button class="nav-link btn btn-link p-0">Logout</button>
+                                            <button class="nav-link btn btn-link p-0">@Localizer["Logout"]</button>
                                         </form>
                                     </li>
                                 }
                                 else
                                 {
-                                    <li><a asp-area="Identity" asp-page="/Account/Login">Login</a></li>
+                                    <li><a asp-area="Identity" asp-page="/Account/Login">@Localizer["Login"]</a></li>
 
                                 }
                             </ul>

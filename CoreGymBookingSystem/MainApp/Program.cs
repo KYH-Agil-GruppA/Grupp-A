@@ -58,6 +58,7 @@ namespace MainApp
             app.UseAuthorization();
 
             app.MapStaticAssets();
+            app.UseRequestLocalization();
             app.MapRazorPages()
                .WithStaticAssets();
 
