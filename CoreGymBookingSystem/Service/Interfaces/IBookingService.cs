@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DAL.Entities;
 
-namespace Service.Interfaces
+namespace Service.Interfaces;
+public interface IBookingService
 {
-    internal interface IBookingService
-    {
-    }
+    Task<List<Session>> GetMyBookingsAsync(int userId);
+    Task<(bool success, string message)> BookSessionAsync(int userId, int sessionId);
+    Task<(bool success, string message)> CancelBookingAsync(int userId, int sessionId);
+    Task<bool> IsBookedAsync(int userId, int sessionId);
+    Task<(bool valid, string message)> ValidateAsync(int userId, int sessionId);
 }

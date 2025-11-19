@@ -9,33 +9,37 @@ namespace MainApp.Pages.Member
     [Authorize(Roles = "Member")]
     public class CategoryModel : PageModel
     {
-        public readonly ISessionService _sessionService;
+        private readonly ISessionService _sessionService;
 
         [BindProperty(SupportsGet = true)]
-        public string SelectedCategory { get; set; }
+        public string? SelectedCategory { get; set; }
 
-        public List<SessionViewModel> SearchbyCategory = new List<SessionViewModel>();
+        public List<SessionViewModel> SearchbyCategory { get; set; } = new();
+
         public CategoryModel(ISessionService sessionService)
         {
             _sessionService = sessionService;
         }
-       
+
         public async Task OnGetAsync()
         {
             await LoadSessions();
-
         }
 
-        public async Task OnPostAsync ()
+        public async Task OnPostAsync()
         {
             await LoadSessions();
-
         }
 
-
-        private async Task LoadSessions ()
+        private async Task LoadSessions()
         {
-            var sessions = await _sessionService.SearchByCategory(SelectedCategory);
+            if (string.IsNullOrWhiteSpace(SelectedCategory))
+            {
+                SearchbyCategory = new List<SessionViewModel>();
+                return;
+            }
+
+            var sessions = await _sessionService.GetSessionsByCategoryAsync(SelectedCategory);
             SearchbyCategory = sessions.Select(s => new SessionViewModel
             {
                 Id = s.Id,
