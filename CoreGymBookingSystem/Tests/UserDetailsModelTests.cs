@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using WebApp.Pages.Admin;
 
 namespace Tests
-{
+{//tests
     public class UserDetailsModelTests
     {
         [Fact]
