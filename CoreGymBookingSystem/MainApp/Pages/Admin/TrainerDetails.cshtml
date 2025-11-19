@@ -7,6 +7,16 @@
 <section class="class-timetable-section admin-dashboard-section">
     <div class="container admin-dashboard-container">
 
+        @if (!string.IsNullOrEmpty(Model.StatusMessage))
+        {
+            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                <i class="fa-regular fa-circle-check me-2"></i>
+                @Model.StatusMessage
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <!-- PAGE HEADER -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h2 class="admin-dashboard-title mb-1">
@@ -14,7 +24,7 @@
                     Trainer Profile
                 </h2>
                 <p class="admin-dashboard-subtitle mb-0">
-                    View trainer information, specialties and contact details.
+                    Manage trainer information, classes and account status.
                 </p>
             </div>
 
@@ -25,46 +35,249 @@
             </div>
         </div>
 
-        <div class="admin-card">
-            <div class="admin-card-header text-center">
-                <h3 class="admin-card-title mb-1">
-                    @Model.User.FirstName @Model.User.LastName
-                </h3>
-                <small class="admin-card-subtitle d-block mb-2">
-                    @Model.User.UserName
-                </small>
+        <div class="row g-4">
 
-                <div class="mb-2">
-                    @foreach (var role in Model.User.Roles)
-                    {
-                        <span class="role-badge">@role</span>
-                    }
+            <!-- LEFT SIDE: TRAINER PROFILE SUMMARY CARD -->
+            <div class="col-lg-4">
+                <div class="admin-card h-100">
+                    <div class="admin-card-header text-center">
+                        <div class="mb-3">
+                            <!-- Avatar Initials -->
+                            <div class="rounded-circle d-inline-flex justify-content-center align-items-center"
+                                 style="width: 72px; height: 72px; background: rgba(255,255,255,0.06); font-size: 1.8rem;">
+                                @Model.Trainer.FirstName?.FirstOrDefault().ToString().ToUpper()
+                                @Model.Trainer.LastName?.FirstOrDefault().ToString().ToUpper()
+                            </div>
+                        </div>
+
+                        <h3 class="admin-card-title mb-1">
+                            @Model.Trainer.FirstName @Model.Trainer.LastName
+                        </h3>
+                        <small class="admin-card-subtitle d-block mb-2">
+                            @Model.Trainer.UserName
+                        </small>
+
+                        <!-- Roles display -->
+                        <div class="mb-2">
+                            @foreach (var role in Model.Trainer.Roles)
+                            {
+                                <span class="badge rounded-pill bg-secondary me-1">@role</span>
+                            }
+                        </div>
+
+                        <!-- Account status -->
+                        <span class="badge @(Model.Trainer.IsLocked ? "bg-danger" : "bg-success")">
+                            @(Model.Trainer.IsLocked ? "Locked Account" : "Active Account")
+                        </span>
+                    </div>
+
+                    <div class="admin-card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <i class="fa-regular fa-envelope me-2"></i>
+                                <strong>Email:</strong><br />
+                                <span class="text-muted">@Model.Trainer.Email</span>
+                            </li>
+                            <li class="mb-2">
+                                <i class="fa-regular fa-id-badge me-2"></i>
+                                <strong>User ID:</strong><br />
+                                <span class="text-muted">@Model.Trainer.Id</span>
+                            </li>
+                            <li class="mb-2">
+                                <i class="fa-solid fa-location-dot me-2"></i>
+                                <strong>Address:</strong><br />
+                                <span class="text-muted">
+                                    @Model.Trainer.Address<br />
+                                    @Model.Trainer.City, @Model.Trainer.Country
+                                </span>
+                            </li>
+                        </ul>
+
+                        <!-- LOCK / UNLOCK / DELETE BUTTONS -->
+                        <hr class="my-3" />
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            @if (Model.Trainer.IsLocked)
+                            {
+                                <form method="post" asp-page-handler="Unlock" class="d-inline">
+                                    <input type="hidden" name="id" value="@Model.Trainer.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                        <i class="fa-solid fa-lock-open me-1"></i> Unlock account
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form method="post" asp-page-handler="Lock" class="d-inline">
+                                    <input type="hidden" name="id" value="@Model.Trainer.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-warning">
+                                        <i class="fa-solid fa-lock me-1"></i> Lock account
+                                    </button>
+                                </form>
+                            }
+
+                            <!-- DELETE TRAINER -->
+                            <form method="post" asp-page-handler="Delete" class="d-inline"
+                                  onsubmit="return confirm('Are you sure you want to delete this trainer? This action cannot be undone.');">
+                                <input asp-for="UserViewModel.Id" type="hidden" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="fa-solid fa-trash me-1"></i> Delete trainer
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- ROLE MANAGEMENT -->
+                        <h6 class="text-uppercase small text-secondary mb-2">
+                            <i class="fa-solid fa-user-gear me-1"></i> Role management
+                        </h6>
+                        <form method="post" asp-page-handler="ChangeRole" class="d-flex gap-2">
+                            <input type="hidden" name="id" value="@Model.Trainer.Id" />
+                            <select asp-for="SelectedRole" class="form-select form-select-sm">
+                                @foreach (var role in Model.AvailableRoles)
+                                {
+                                    <option value="@role" selected="@(role == Model.SelectedRole ? "selected" : null)">
+                                        @role
+                                    </option>
+                                }
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-outline-info">
+                                <i class="fa-solid fa-rotate me-1"></i> Update
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
 
-            <div class="admin-card-body">
-                <dl class="row">
-                    <dt class="col-sm-3">User ID</dt>
-                    <dd class="col-sm-9">@Model.User.Id</dd>
+            <!-- RIGHT SIDE: EDITABLE DETAILS + TRAINER SESSIONS -->
+            <div class="col-lg-8">
+                <div class="card admin-card h-100">
+                    <div class="card-header admin-card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="admin-card-title mb-1">Trainer Details</h3>
+                            <small class="admin-card-subtitle">
+                                Edit personal information and address.
+                            </small>
+                        </div>
+                    </div>
 
-                    <dt class="col-sm-3">Email</dt>
-                    <dd class="col-sm-9">@Model.User.Email</dd>
+                    <div class="card-body admin-card-body">
 
-                    <dt class="col-sm-3">Address</dt>
-                    <dd class="col-sm-9">
-                        @Model.User.Address<br />
-                        @Model.User.City, @Model.User.Country
-                    </dd>
-                </dl>
-                <form method="post" asp-page-handler="Delete" class="d-inline"
-                      onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.');">
-                    <button type="submit" class="btn btn-sm btn-outline-warning">
-                        <i class="fa-solid fa-lock me-1"></i> delete user
-                    </button>
+                        <!-- EDIT FORM -->
+                        <form method="post" asp-page-handler="Save">
+                            <input type="hidden" asp-for="Input.Id" />
 
-                </form>
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Input.FirstName" class="form-label small text-uppercase text-secondary">
+                                        First name
+                                    </label>
+                                    <input asp-for="Input.FirstName" class="form-control" />
+                                    <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Input.LastName" class="form-label small text-uppercase text-secondary">
+                                        Last name
+                                    </label>
+                                    <input asp-for="Input.LastName" class="form-control" />
+                                    <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Input.Email" class="form-label small text-uppercase text-secondary">
+                                        Email
+                                    </label>
+                                    <input asp-for="Input.Email" class="form-control" />
+                                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- ADDRESS SECTION -->
+                            <div class="mb-3">
+                                <label asp-for="Input.Address" class="form-label small text-uppercase text-secondary">
+                                    Street address
+                                </label>
+                                <input asp-for="Input.Address" class="form-control" />
+                                <span asp-validation-for="Input.Address" class="text-danger"></span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Input.City" class="form-label small text-uppercase text-secondary">
+                                        City
+                                    </label>
+                                    <input asp-for="Input.City" class="form-control" />
+                                    <span asp-validation-for="Input.City" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Input.Country" class="form-label small text-uppercase text-secondary">
+                                        Country
+                                    </label>
+                                    <input asp-for="Input.Country" class="form-control" />
+                                    <span asp-validation-for="Input.Country" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end mt-3 mb-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa-regular fa-floppy-disk me-1"></i> Save changes
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- TRAINER SESSIONS -->
+                        <hr class="my-4" />
+                        <h5 class="text-uppercase small text-secondary mb-3">
+                            <i class="fa-solid fa-calendar-check me-2"></i>Trainer classes
+                        </h5>
+
+                        @if (!Model.Sessions.Any())
+                        {
+                            <p class="text-muted mb-0">
+                                This trainer is not assigned to any sessions yet.
+                            </p>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-dark table-borderless align-middle mb-0">
+                                    <thead class="admin-table-header">
+                                        <tr class="text-uppercase text-secondary small">
+                                            <th>Title</th>
+                                            <th>Category</th>
+                                            <th>Start</th>
+                                            <th>End</th>
+                                            <th class="text-end">Max participants</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var s in Model.Sessions)
+                                        {
+                                            <tr class="admin-table-row">
+                                                <td>@s.Title</td>
+                                                <td>@s.Category</td>
+                                                <td>@s.StartTime.ToString("yyyy-MM-dd HH:mm")</td>
+                                                <td>@s.EndTime.ToString("yyyy-MM-dd HH:mm")</td>
+                                                <td class="text-end">@s.MaxParticipants</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+
+                    </div>
+                </div>
             </div>
+
         </div>
     </div>
 </section>
+
+@section Scripts {
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <partial name="_ValidationScriptsPartial" />
+}
