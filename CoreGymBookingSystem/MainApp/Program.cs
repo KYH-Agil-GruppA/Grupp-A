@@ -4,65 +4,66 @@ using DAL.Repositories;
 using DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Service.Interfaces;
 using Service.Services;
 using Services.Interfaces;
 
-namespace MainApp
-{
-    public class Program
-    {
-        public static async Task Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+namespace MainApp;
 
-            // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-            builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
-                          .AddRoles<IdentityRole<int>>()
-                          .AddEntityFrameworkStores<ApplicationDbContext>();
-            builder.Services.AddRazorPages()
+public class Program
+{
+    public static async Task Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+
+        // Add services to the container.
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(connectionString));
+        builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+        builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
+                      .AddRoles<IdentityRole<int>>()
+                      .AddEntityFrameworkStores<ApplicationDbContext>();
+        builder.Services.AddRazorPages()
                 .AddViewLocalization()
                 .AddDataAnnotationsLocalization();
 
-            builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
-            builder.Services.AddRequestLocalization(options =>
-            {
-                options.SetDefaultCulture("en");
-                options.AddSupportedCultures("en", "sv");
-                options.AddSupportedUICultures("en", "sv");
-            });
+        builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+        builder.Services.AddRequestLocalization(options =>
+        {
+            options.SetDefaultCulture("en");
+            options.AddSupportedCultures("en", "sv");
+            options.AddSupportedUICultures("en", "sv");
+        });
 
-            builder.Services.AddTransient<DataInitializer>();
+        builder.Services.AddTransient<DataInitializer>();
 
+        builder.Services.AddScoped<ISessionRepository, SessionRepository>();
+        builder.Services.AddScoped<ISessionService, SessionService>();
+        builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+        builder.Services.AddScoped<IBookingService, BookingService>();
+        builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+        builder.Services.AddScoped<INotificationService, NotificationService>();
 
-            builder.Services.AddScoped<ISessionRepository, SessionRepository>();
-            builder.Services.AddScoped<ISessionService, SessionService>();
-            builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-            builder.Services.AddScoped<INotificationService, NotificationService>();
+        var app = builder.Build();
 
-            var app = builder.Build();
-
-            using (var scope = app.Services.CreateScope())
-            {
-                var inilizer = scope.ServiceProvider.GetRequiredService<DataInitializer>();
-                await inilizer.SeedData();
-            }
-            app.UseStaticFiles();
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.MapStaticAssets();
-            app.UseRequestLocalization();
-            app.MapRazorPages()
-               .WithStaticAssets();
-
-            app.Run();
+        using (var scope = app.Services.CreateScope())
+        {
+            var inilizer = scope.ServiceProvider.GetRequiredService<DataInitializer>();
+            await inilizer.SeedData();
         }
+        app.UseStaticFiles();
+        app.UseRequestLocalization();
+        app.UseHttpsRedirection();
+
+        app.UseRouting();
+
+        app.UseAuthorization();
+
+        app.MapStaticAssets();
+        app.MapRazorPages()
+           .WithStaticAssets();
+
+        app.Run();
     }
 }

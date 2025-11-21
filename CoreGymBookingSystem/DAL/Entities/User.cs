@@ -2,14 +2,15 @@
 
 namespace DAL.Entities;
 
-
-/// <summary>
-/// A gym account.
-/// </summary>
 public class User : IdentityUser<int>
 {
     /// <summary>
     /// All bookings made by this user.
     /// </summary>
-    public List<Session> Bookings { get; set; } = [];
+    public List<Booking> Bookings { get; set; } = [];
+
+    /// <summary>
+    /// All sessions this user instructs (if they are a trainer).
+    /// </summary>
+    public List<Session> InstructedSessions { get; set; } = [];
 }

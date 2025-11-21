@@ -1,37 +1,71 @@
 using DAL.DbContext;
 using DAL.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Service.Interfaces;
 
-namespace MainApp.Pages.Sessions
+namespace MainApp.Pages.Sessions;
+
+public class SessionDetailsModel(
+    ApplicationDbContext context,
+    IBookingService bookingService,
+    UserManager<User> userManager) : PageModel
 {
-    public class SessionDetailsModel : PageModel
+    private readonly ApplicationDbContext _context = context;
+    private readonly IBookingService _bookingService = bookingService;
+    private readonly UserManager<User> _userManager = userManager;
+
+    public Session Session { get; set; } = default!;
+    public bool IsMember { get; set; } = false;
+    public bool IsBooked { get; set; } = false;
+
+    [TempData]
+    public string? StatusMessage { get; set; }
+
+    public async Task<IActionResult> OnGetAsync(int id)
     {
-        private readonly ApplicationDbContext _context;
+        var session = await _context.Sessions
+            .Include(s => s.Instructor)
+            .Include(s => s.Bookings)
+            .FirstOrDefaultAsync(s => s.Id == id);
 
-        public SessionDetailsModel(ApplicationDbContext context)
+        if (session == null) return NotFound();
+
+        Session = session;
+
+        var user = await _userManager.GetUserAsync(User);
+        if (user != null && await _userManager.IsInRoleAsync(user, "Member"))
         {
-            _context = context;
+            IsMember = true;
+            IsBooked = await _bookingService.IsBookedAsync(user.Id, id);
         }
 
-        public Session Session { get; set; } = default!;
+        return Page();
+    }
 
-        public async Task<IActionResult> OnGetAsync(int id)
-        {
-            var session = await _context.Sessions
-                .Include(s => s.Instructor)
-                .Include(s => s.Bookings)
-                .FirstOrDefaultAsync(s => s.Id == id);
+    public async Task<IActionResult> OnPostBookAsync(int id)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return RedirectToPage("/Account/Login", new { area = "Identity" });
 
-            if (session == null)
-            {
-                return NotFound();
-            }
+        var (success, message) = await _bookingService.BookSessionAsync(user.Id, id);
+        StatusMessage = message;
 
-            Session = session;
-            return Page();
-        }
+        return RedirectToPage(new { id });
+    }
+
+    public async Task<IActionResult> OnPostCancelAsync(int id)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return RedirectToPage("/Account/Login", new { area = "Identity" });
+
+        var (success, message) = await _bookingService.CancelBookingAsync(user.Id, id);
+        StatusMessage = message;
+
+        return RedirectToPage(new { id });
     }
 }
-  
