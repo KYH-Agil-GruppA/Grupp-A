@@ -9,6 +9,7 @@ using Service.Services;
 using Services.Interfaces;
 
 namespace MainApp;
+
 public class Program
 {
     public static async Task Main(string[] args)
@@ -23,7 +24,17 @@ public class Program
         builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
                       .AddRoles<IdentityRole<int>>()
                       .AddEntityFrameworkStores<ApplicationDbContext>();
-        builder.Services.AddRazorPages();
+        builder.Services.AddRazorPages()
+                .AddViewLocalization()
+                .AddDataAnnotationsLocalization();
+
+        builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+        builder.Services.AddRequestLocalization(options =>
+        {
+            options.SetDefaultCulture("en");
+            options.AddSupportedCultures("en", "sv");
+            options.AddSupportedUICultures("en", "sv");
+        });
 
         builder.Services.AddTransient<DataInitializer>();
 
@@ -42,6 +53,7 @@ public class Program
             await inilizer.SeedData();
         }
         app.UseStaticFiles();
+        app.UseRequestLocalization();
         app.UseHttpsRedirection();
 
         app.UseRouting();
