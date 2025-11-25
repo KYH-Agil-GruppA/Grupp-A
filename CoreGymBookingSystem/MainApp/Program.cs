@@ -26,12 +26,12 @@ public class Program
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
         builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
-                      .AddRoles<IdentityRole<int>>()
-                      .AddEntityFrameworkStores<ApplicationDbContext>();
+                        .AddRoles<IdentityRole<int>>()
+                        .AddEntityFrameworkStores<ApplicationDbContext>();
 
         builder.Services.AddRazorPages();
 
-        // Add repositories and services
+        // Repositories & Services
         builder.Services.AddScoped<ISessionRepository, SessionRepository>();
         builder.Services.AddScoped<ISessionService, SessionService>();
         builder.Services.AddScoped<IBookingRepository, BookingRepository>();
@@ -56,6 +56,7 @@ public class Program
         app.UseHttpsRedirection();
         app.UseRouting();
         app.UseAuthorization();
+
         app.MapStaticAssets();
         app.MapRazorPages()
            .WithStaticAssets();
