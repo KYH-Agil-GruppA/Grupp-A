@@ -71,6 +71,17 @@ namespace MainApp.Areas.Identity.Pages.Account
         /// </summary>
         public class InputModel
         {
+            public string FirstName { get; set; } = string.Empty;
+
+            public string LastName { get; set; }  = string.Empty;
+
+            public string Adress { get; set; } = string.Empty;
+
+            public string City { get; set; } = string.Empty;
+
+            public string Country {  get; set; } = string.Empty;
+
+
             [DataType(DataType.Text)]
             [Display(Name = "User role")]
             public string UserRole { get; set; }
@@ -117,7 +128,11 @@ namespace MainApp.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
-
+                user.FirstName = Input.FirstName;
+                user.LastName = Input.LastName;
+                user.Address = Input.Adress;
+                user.City = Input.City;
+                user.Country = Input.Country;
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);

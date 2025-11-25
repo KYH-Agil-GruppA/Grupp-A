@@ -6,109 +6,185 @@
     ViewData["Title"] = "Admin – Dashboard";
 }
 
-<section class="breadcrumb-section set-bg" data-setbg="/Gym_Tem/img/breadcrumb-bg.jpg">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12 text-center">
-                <div class="breadcrumb-text">
-                    <h2>Admin – Dashboard</h2>
-                    <div class="bt-option">
-                        <a asp-page="/Index">Home</a>
-                        <span>Admin Panel</span>
-                    </div>
-                </div>
+<section class="class-timetable-section admin-dashboard-section">
+    <div class="container admin-dashboard-container">
+
+        @if (!string.IsNullOrEmpty(Model.StatusMessage))
+        {
+            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                <i class="fa-regular fa-circle-check me-2"></i>
+                @Model.StatusMessage
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
+        }
+
+        <!-- Header -->
+        <!-- Header -->
+        <div class="admin-dashboard-header">
+            <h2 class="admin-dashboard-title">Admin Dashboard</h2>
+            <p class="admin-dashboard-subtitle">
+                Overview of users, members and trainers in your gym.
+            </p>
+
+            <!-- 🔍 SEARCH BAR UNDER HEADER -->
+            <form method="get" class="admin-search-form">
+                <div class="admin-search-group">
+                    <span class="admin-search-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" />
+                        </svg>
+                    </span>
+
+                    <input type="text"
+                           name="searchTerm"
+                           class="admin-search-input"
+                           placeholder="Search by ID, first name, last name or role..."
+                           value="@Model.SearchTerm" />
+
+                    <button type="submit" class="admin-search-btn">
+                        Search
+                    </button>
+
+                    <a asp-page="./Dashboard" class="admin-search-clear">
+                        Clear
+                    </a>
+                </div>
+            </form>
+
         </div>
-    </div>
-</section>
 
-<section class="contact-section spad">
-    <div class="container">
+        <!-- CARD -->
+        <div class="admin-card">
 
-        <!-- Top stats -->
-        <div class="row mb-4">
-            <div class="col-lg-4">
-                <div class="contact-widget">
-                    <div class="cw-text">
+            <!-- HEADER -->
+            <div class="admin-card-header">
+                <h3 class="admin-card-title">Gym Overview</h3>
+                <small class="admin-card-subtitle">
+                    Summary of members & trainers
+                </small>
+            </div>
+
+            <!-- BODY -->
+            <div class="admin-card-body">
+
+                <!-- TOP STATS -->
+                <div class="admin-stats-row">
+                    <div class="admin-stat">
                         <i class="fa fa-users"></i>
-                        <p><strong>Total Users</strong></p>
-                        <p>@Model.TotalUsers users</p>
+                        <h6>Total Users</h6>
+                        <span>@Model.TotalUsers</span>
                     </div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="contact-widget">
-                    <div class="cw-text">
+
+                    <div class="admin-stat">
                         <i class="fa fa-id-badge"></i>
-                        <p><strong>Members</strong></p>
-                        <p>@Model.MembersCount users</p>
+                        <h6>Members</h6>
+                        <span>@Model.MembersCount</span>
+                    </div>
+
+                    <div class="admin-stat">
+                        <i class="fa fa-dumbbell"></i>
+                        <h6>Trainers</h6>
+                        <span>@Model.TrainersCount</span>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="contact-widget">
-                    <div class="cw-text">
-                        <i class="fa fa-user"></i>
-                        <p><strong>Trainers</strong></p>
-                        <p>@Model.TrainersCount users</p>
-                    </div>
+
+                <!-- TITLE -->
+                <div class="admin-users-title">
+                    <h4>Latest Members & Trainers</h4>
+                    <small>
+                        Showing the most recently created users with roles Member/Trainer
+                    </small>
                 </div>
-            </div>
-        </div>
 
-        <!-- Latest users (Member/Trainer) -->
-        <div class="class-details-text">
-            <div class="cd-single-item">
-                <h4 class="mb-3">Latest Members & Trainers</h4>
-
-                <div class="table-responsive">
-                    <table class="table table-borderless" style="color:#fff;">
-                        <thead>
-                            <tr>
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th>Roles</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (!Model.LatestUsers.Any())
-                            {
-                                <tr><td colspan="4" class="text-center"><em>No users found.</em></td></tr>
-                            }
-                            else
-                            {
-                                foreach (var u in Model.LatestUsers)
+                <!-- USERS TABLE -->
+                <div class="admin-table-card">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-borderless align-middle mb-0">
+                            <thead class="admin-table-header">
+                                <tr class="text-uppercase text-secondary small">
+                                    <th>ID</th>
+                                    <th>First Name</th>
+                                    <th>Last Name</th>
+                                    <th>Roles</th>
+                                    <th class="text-center">Info</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (!Model.LatestUsers.Any())
                                 {
                                     <tr>
-                                        <td>@u.UserName</td>
-                                        <td>@u.Email</td>
-                                        <td>
-                                            @foreach (var r in u.Roles)
-                                            {
-                                                <span class="badge bg-secondary me-1">@r</span>
-                                            }
-                                        </td>
-                                        <td>
-                                            @if (u.IsLocked)
-                                            {
-                                                <span class="badge bg-danger">Locked</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-success">Active</span>
-                                            }
+                                        <td colspan="5" class="text-center py-4 text-muted">
+                                            <em>No users found.</em>
                                         </td>
                                     </tr>
                                 }
-                            }
-                        </tbody>
-                    </table>
+                                else
+                                {
+                                    @foreach (var u in Model.LatestUsers)
+                                    {
+                                        <tr class="admin-table-row">
+                                            <td>@u.Id</td>
+                                            <td>@u.FirstName</td>
+                                            <td>@u.LastName</td>
+                                            <td>
+                                                @foreach (var r in u.Roles)
+                                                {
+                                                    var roleLower = r?.ToLowerInvariant();
+
+                                                    <span class="role-badge @(roleLower == "admin" ? "role-badge-admin" : "")">
+                                                        @if (roleLower == "admin")
+                                                        {
+                                                            <i class="fa-solid fa-shield-halved me-1"></i>
+                                                        }
+                                                        @r
+                                                    </span>
+                                                }
+                                            </td>
+                                            <td class="text-center">
+                                                @{
+                                                    var rolesLower = (u.Roles ?? Array.Empty<string>())
+                                                    .Select(r => r?.ToLowerInvariant())
+                                                    .ToArray();
+
+                                                    var profilePage = rolesLower.Contains("admin")
+                                                    ? "/Admin/AdminDetails"
+                                                    : rolesLower.Contains("trainer")
+                                                    ? "/Admin/TrainerDetails"
+                                                    : "/Admin/UserDetails";
+                                                }
+
+                                                <a asp-page="@profilePage"
+                                                   asp-route-id="@u.Id"
+                                                   class="btn btn-sm btn-outline-info"
+                                                   title="View Profile">
+                                                    <i class="fa fa-info-circle"></i>
+                                                </a>
+                                            </td>
+
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
-                <a asp-page="/Index" class="site-btn" style="margin-top:12px;">Back</a>
+                <!-- BACK BUTTON -->
+                <div class="admin-back">
+                    <a asp-page="/Index"
+                       class="btn btn-outline-light">
+                        <i class="fa fa-arrow-left me-1"></i> Back to Site
+                    </a>
+                </div>
+
             </div>
         </div>
 
     </div>
 </section>
+
+@section Scripts {
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}
