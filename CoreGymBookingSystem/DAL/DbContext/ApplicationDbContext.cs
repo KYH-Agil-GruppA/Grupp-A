@@ -18,6 +18,7 @@ public partial class ApplicationDbContext(DbContextOptions<ApplicationDbContext>
     public DbSet<Session> Sessions { get; set; } = null!;
     public DbSet<Booking> Bookings { get; set; } = null!;
     public DbSet<Notification> Notifications { get; set; } = null!;
+    public DbSet<MembershipType> MembershipTypes { get; set; } = null!;
 
     /// <inheritdoc cref="Microsoft.EntityFrameworkCore.DbContext.OnModelCreating"/>
     protected override void OnModelCreating(ModelBuilder builder)
@@ -144,5 +145,47 @@ public partial class ApplicationDbContext(DbContextOptions<ApplicationDbContext>
             // Index for performance
             entity.HasIndex(n => n.CreatedAt);
         });
+
+        // ============================================
+        // MEMBERSHIP TYPE SEEDING (Your code)
+        // ============================================
+        builder.Entity<MembershipType>()
+               .HasData(SeedMembershipTypes());
+
     }
+    private static MembershipType[] SeedMembershipTypes()
+    {
+        return new[]
+        {
+            new MembershipType
+            {
+                Id = 1,
+                Name = "Adult Membership",
+                Price = 399,
+                Description = "Unlimited access to all classes and gym facilities.",
+                ImageUrl = "/Gym_Tem/img/memberships/adult.jpg"
+
+            },
+            new MembershipType
+            {
+                Id = 2,
+                Name = "Student Membership",
+                Price = 299,
+                Description = "Discounted membership for students with valid ID.",
+                ImageUrl = "/Gym_Tem/img/memberships/student.jpg"
+
+            },
+            new MembershipType
+            {
+                Id = 3,
+                Name = "Senior Membership",
+                Price = 249,
+                Description = "Full gym access with flexible hours for seniors aged 65+.",
+                ImageUrl = "/Gym_Tem/img/memberships/senior.jpg"
+
+            }
+        };
+
+    }
+
 }
