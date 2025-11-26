@@ -45,6 +45,8 @@ public class Program
         builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
         builder.Services.AddScoped<INotificationService, NotificationService>();
         builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IMembershipService, MembershipService>();
+
 
 
         var app = builder.Build();

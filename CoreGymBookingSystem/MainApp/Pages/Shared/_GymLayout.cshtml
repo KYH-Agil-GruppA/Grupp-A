@@ -121,6 +121,10 @@
                                     
                                     <li><a asp-page="/Member/Category">@Localizer["Index"]</a></li>
                                     <li><a asp-page="/ClassDetails">@Localizer["ClassDetails"]</a></li>
+
+                                    <li class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Membership/MembershipList" ? "active" : "")">
+                                        <a asp-page="/Membership/MembershipList">Membership</a>
+                                    </li>
                                 }
 
 
@@ -131,6 +135,7 @@
                                    
                                     <li class="active"><a asp-page="/Index">@Localizer["Index"]</a></li>
                                     <li><a asp-page="/Trainer/Dashboard">@Localizer["Dashboard"]</a></li>
+
 
                                 }
                             }
