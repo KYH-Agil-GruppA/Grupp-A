@@ -1,8 +1,11 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
 using DAL.Entities;
 using MainApp.ViewModel.Membership;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Service.Interfaces;
+
 
 namespace MainApp.Pages.Membership
 {
@@ -39,11 +42,12 @@ namespace MainApp.Pages.Membership
 
         public async Task<IActionResult> OnPostAsync(int id)
         {
+
             if (!ModelState.IsValid)
                 return Page();
 
-            if (Input.MembershipTypeId == 0)
-                Input.MembershipTypeId = id;
+            //if (Input.MembershipTypeId == 0)
+            //    Input.MembershipTypeId = id;
 
 
             return RedirectToPage("/Membership/Summary", new
