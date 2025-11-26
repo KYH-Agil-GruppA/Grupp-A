@@ -105,12 +105,8 @@
                                     {
                                         <tr class="border-bottom border-secondary">
                                             <td>
-                                                <a asp-page="/Sessions/SessionDetails"
-                                                   asp-route-id="@s.Id"
-                                                   class="text-decoration-none text-reset">
-                                                    <div class="fw-bold">@s.Title</div>
-                                                    <div class="text-muted small">@s.Description</div>
-                                                </a>
+                                                <div class="fw-bold">@s.Title</div>
+                                                <div class="text-muted small">@s.Description</div>
                                             </td>
                                             <td class="text-end">
                                                 <span class="badge rounded-pill bg-secondary">@s.Category</span>
