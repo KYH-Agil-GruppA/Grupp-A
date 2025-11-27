@@ -32,63 +32,18 @@
 
                             <p class="text-muted">@item.Description</p>
 
-                            <!-- Trigger Modal -->
-                            <button class="btn btn-primary w-100"
+                       
+                            <button class="btn btn-primary w-100 choose-btn"
                                     style="background:#ff6a00; border:none; padding:12px; font-size:16px;"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#membershipModal-@item.Id">
+                                    data-id="@item.Id"
+                                    data-name="@item.Name"
+                                    data-price="@item.Price"
+                                    data-description="@item.Description">
                                 CHOOSE
                             </button>
+
                         </div>
                     </div>
-
-                    <!-- Modal -->
-                    <div class="modal fade" id="membershipModal-@item.Id" tabindex="-1">
-                        <div class="modal-dialog modal-lg modal-dialog-centered">
-                            <div class="modal-content p-4">
-
-                                <div class="modal-header">
-                                    <h5 class="modal-title">@item.Name</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-
-                                <div class="modal-body">
-
-                                    <p class="text-muted">@item.Description</p>
-
-                                    <h4 style="color:#ff6a00;">@item.Price kr</h4>
-
-                                    <!-- FORM TO SIGNUP -->
-                                    <form method="get" asp-page="/Membership/Signup">
-
-                                        <input type="hidden" name="id" value="@item.Id" />
-
-                                        <div class="form-group mb-3">
-                                            <label>Facility</label>
-                                            <select class="form-control" name="facility">
-                                                <option>Core Gym KYH</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="form-group mb-3">
-                                            <label>Start Date</label>
-                                            <input type="date" class="form-control" name="startDate" required />
-                                        </div>
-
-                                        <button type="submit"
-                                                class="btn btn-primary w-100"
-                                                style="background:#ff6a00; border:none;">
-                                            ADD TO CART
-                                        </button>
-
-                                    </form>
-
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End Modal -->
 
                 </div>
             }
@@ -97,3 +52,66 @@
 
     </div>
 </section>
+
+
+<!-- GLOBAL MODAL (Bootstrap 4 — SAFE STRUCTURE) -->
+<div class="modal fade" id="membershipModal" tabindex="-1" role="dialog" aria-labelledby="membershipModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="membershipModalLabel"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <p id="modalDescription" class="text-muted"></p>
+                <h4 id="modalPrice" style="color:#ff6a00;"></h4>
+
+                <!-- ********* FORM IS HERE ********* -->
+                <form id="purchaseForm" method="get" action="/Membership/Signup">
+
+                    <input type="hidden" name="id" id="membershipId" />
+
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" name="startDate" class="form-control" required />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100"
+                            style="background:#ff6a00; border:none; margin-top:20px;">
+                        ADD TO CART
+                    </button>
+
+                </form>
+                <!-- ********* END OF FORM ********* -->
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $('.choose-btn').click(function () {
+
+                $('#membershipId').val($(this).data('id'));
+                $('#membershipModalLabel').text($(this).data('name'));
+                $('#modalDescription').text($(this).data('description'));
+                $('#modalPrice').text($(this).data('price') + " kr");
+
+                $('#membershipModal').modal('show'); 
+            });
+
+        });
+    </script>
+}
+
