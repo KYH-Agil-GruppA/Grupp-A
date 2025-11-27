@@ -43,13 +43,22 @@
                         <li class="list-group-item"><strong>Email:</strong> @Model.Info.Email</li>
                         <li class="list-group-item"><strong>Address:</strong> @Model.Info.Address</li>
                         <li class="list-group-item"><strong>Phone:</strong> @Model.Info.Phone</li>
-                    </ul>
+                        <li class="list-group-item"><strong>Start Date:</strong> @Model.Info.StartDate.ToString("yyyy-MM-dd")</li>
 
+                    </ul>
                     <a asp-page="/Membership/Success"
+                       asp-route-id="@Model.Info.MembershipTypeId"
+                       asp-route-first="@Model.Info.FirstName"
+                       asp-route-last="@Model.Info.LastName"
+                       asp-route-email="@Model.Info.Email"
+                       asp-route-address="@Model.Info.Address"
+                       asp-route-phone="@Model.Info.Phone"
+                       asp-route-startDate="@Model.Info.StartDate.ToString("yyyy-MM-dd")" 
                        class="btn btn-primary w-100 mt-4"
                        style="background:#ff6a00; border:none; padding:12px; font-size:18px;">
                         Confirm Purchase
                     </a>
+
 
 
                 </div>

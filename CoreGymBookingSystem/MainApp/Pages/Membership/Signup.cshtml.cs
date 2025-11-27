@@ -52,7 +52,8 @@ namespace MainApp.Pages.Membership
                 last = Input.LastName,
                 email = Input.Email,
                 address = Input.Address,
-                phone = Input.Phone
+                phone = Input.Phone,
+                startDate = Input.StartDate
             });
         }
     }

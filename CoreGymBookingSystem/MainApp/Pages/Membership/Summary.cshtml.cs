@@ -17,14 +17,10 @@ namespace MainApp.Pages.Membership
         public MembershipSummaryVM Info { get; set; }
 
         public async Task<IActionResult> OnGetAsync(
-            int id, string first, string last,
-            string email, string address, string phone)
+         int id, string first, string last,
+         string email, string address, string phone,
+         DateTime startDate)
         {
-            if (string.IsNullOrEmpty(first) || string.IsNullOrEmpty(email))
-            {
-                return RedirectToPage("/Membership/Signup", new { id });
-            }
-
             var membership = await _membershipService.GetByIdAsync(id);
 
             if (membership == null)
@@ -32,15 +28,19 @@ namespace MainApp.Pages.Membership
 
             Info = new MembershipSummaryVM
             {
+                MembershipTypeId = membership.Id,
                 MembershipName = membership.Name,
-                Price = membership.Price,
                 Description = membership.Description,
                 ImageUrl = membership.ImageUrl,
+                Price = membership.Price,
+
                 FirstName = first,
                 LastName = last,
                 Email = email,
                 Address = address,
-                Phone = phone
+                Phone = phone,
+
+                StartDate = startDate
             };
 
             return Page();

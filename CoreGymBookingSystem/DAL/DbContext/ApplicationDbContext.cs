@@ -19,6 +19,8 @@ public partial class ApplicationDbContext(DbContextOptions<ApplicationDbContext>
     public DbSet<Booking> Bookings { get; set; } = null!;
     public DbSet<Notification> Notifications { get; set; } = null!;
     public DbSet<MembershipType> MembershipTypes { get; set; } = null!;
+    public DbSet<MembershipPurchase> MembershipPurchases { get; set; }
+
 
     /// <inheritdoc cref="Microsoft.EntityFrameworkCore.DbContext.OnModelCreating"/>
     protected override void OnModelCreating(ModelBuilder builder)

@@ -4,7 +4,43 @@
     Layout = "_Gymlayout";
 }
 
-<h2>Thank you for joining!</h2>
-<p>Your membership has been created successfully!</p>
+<section class="checkout-section spad">
+    <div class="container">
 
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2">
 
+                <div class="card shadow-lg p-5 text-center" style="border-radius:12px;">
+
+                    <h2 style="font-weight:800; color:#ff6a00;">Thank You!</h2>
+                    <p class="mt-3" style="font-size:18px;">
+                        Your membership has been successfully activated.
+                    </p>
+
+                    <hr />
+
+                    <h4 class="mt-4">Membership Details</h4>
+
+                    <p><strong>Membership:</strong> @Model.Info.MembershipName</p>
+                    <p><strong>Price:</strong> @Model.Info.Price kr</p>
+                    <p><strong>Start Date:</strong> @Model.Info.StartDate.ToString("yyyy-MM-dd")</p>
+
+                    <h4 class="mt-4">Your Information</h4>
+
+                    <p>@Model.Info.FirstName @Model.Info.LastName</p>
+                    <p>@Model.Info.Email</p>
+                    <p>@Model.Info.Phone</p>
+
+                    <a href="/Membership/Index"
+                       class="btn btn-primary mt-4"
+                       style="background:#ff6a00; border:none; padding:12px; font-size:18px;">
+                        Back to Membership Plans
+                    </a>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>

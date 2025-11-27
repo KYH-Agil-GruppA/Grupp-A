@@ -19,12 +19,11 @@
             @foreach (var item in Model.Memberships)
             {
                 <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="card shadow-lg p-3" style="border-radius:10px;">
 
+                    <div class="card shadow-lg p-3" style="border-radius:10px;">
                         <img src="@item.ImageUrl" class="card-img-top" style="border-radius:8px;" />
 
                         <div class="card-body text-center">
-
                             <h4 style="font-weight:700;">@item.Name</h4>
 
                             <h3 style="color:#ff6a00; font-weight:700;">
@@ -33,15 +32,64 @@
 
                             <p class="text-muted">@item.Description</p>
 
-                            <a asp-page="/Membership/Signup"
-                               asp-route-id="@item.Id"
-                               class="btn btn-primary w-100"
-                               style="background:#ff6a00; border:none; padding:12px; font-size:16px;">
+                            <!-- Trigger Modal -->
+                            <button class="btn btn-primary w-100"
+                                    style="background:#ff6a00; border:none; padding:12px; font-size:16px;"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#membershipModal-@item.Id">
                                 CHOOSE
-                            </a>
-
+                            </button>
                         </div>
                     </div>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="membershipModal-@item.Id" tabindex="-1">
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-content p-4">
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title">@item.Name</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+
+                                    <p class="text-muted">@item.Description</p>
+
+                                    <h4 style="color:#ff6a00;">@item.Price kr</h4>
+
+                                    <!-- FORM TO SIGNUP -->
+                                    <form method="get" asp-page="/Membership/Signup">
+
+                                        <input type="hidden" name="id" value="@item.Id" />
+
+                                        <div class="form-group mb-3">
+                                            <label>Facility</label>
+                                            <select class="form-control" name="facility">
+                                                <option>Core Gym KYH</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label>Start Date</label>
+                                            <input type="date" class="form-control" name="startDate" required />
+                                        </div>
+
+                                        <button type="submit"
+                                                class="btn btn-primary w-100"
+                                                style="background:#ff6a00; border:none;">
+                                            ADD TO CART
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Modal -->
+
                 </div>
             }
 
