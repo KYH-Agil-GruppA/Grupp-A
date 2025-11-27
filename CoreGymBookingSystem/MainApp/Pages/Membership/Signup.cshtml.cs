@@ -40,15 +40,10 @@ namespace MainApp.Pages.Membership
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int id)
+        public async Task<IActionResult> OnPostAsync()
         {
-
             if (!ModelState.IsValid)
                 return Page();
-
-            //if (Input.MembershipTypeId == 0)
-            //    Input.MembershipTypeId = id;
-
 
             return RedirectToPage("/Membership/Summary", new
             {
@@ -61,4 +56,5 @@ namespace MainApp.Pages.Membership
             });
         }
     }
+
 }

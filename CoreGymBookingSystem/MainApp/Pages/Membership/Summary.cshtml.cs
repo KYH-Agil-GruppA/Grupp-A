@@ -19,15 +19,16 @@ namespace MainApp.Pages.Membership
         public async Task<IActionResult> OnGetAsync(
             int id, string first, string last,
             string email, string address, string phone)
-
         {
+            if (string.IsNullOrEmpty(first) || string.IsNullOrEmpty(email))
+            {
+                return RedirectToPage("/Membership/Signup", new { id });
+            }
 
             var membership = await _membershipService.GetByIdAsync(id);
 
             if (membership == null)
-            {
                 return RedirectToPage("/Error");
-            }
 
             Info = new MembershipSummaryVM
             {
@@ -35,7 +36,6 @@ namespace MainApp.Pages.Membership
                 Price = membership.Price,
                 Description = membership.Description,
                 ImageUrl = membership.ImageUrl,
-
                 FirstName = first,
                 LastName = last,
                 Email = email,
@@ -45,5 +45,6 @@ namespace MainApp.Pages.Membership
 
             return Page();
         }
+
     }
 }
