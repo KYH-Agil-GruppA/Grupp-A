@@ -1,11 +1,6 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-using DAL.Entities;
-using MainApp.ViewModel.Membership;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Service.Interfaces;
-
 
 namespace MainApp.Pages.Membership
 {
@@ -19,43 +14,60 @@ namespace MainApp.Pages.Membership
         }
 
         [BindProperty]
-        public MembershipSignupViewModel Input { get; set; }
+        public SignupInputModel Input { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int id)
+        public class SignupInputModel
+        {
+            public int MembershipTypeId { get; set; }
+            public string MembershipName { get; set; }
+            public string Description { get; set; }
+            public string ImageUrl { get; set; }
+            public decimal Price { get; set; }
+
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string Email { get; set; }
+            public string Address { get; set; }
+            public string Phone { get; set; }
+            public DateTime StartDate { get; set; }
+        }
+
+        public async Task<IActionResult> OnGet(int id, DateTime startDate)
         {
             var membership = await _membershipService.GetByIdAsync(id);
 
             if (membership == null)
-                return RedirectToPage("/Error");
-
-            Input = new MembershipSignupViewModel
             {
-                MembershipTypeId = membership.Id,
+                return RedirectToPage("/Error");
+            }
+
+            Input = new SignupInputModel
+            {
+                MembershipTypeId = id,
                 MembershipName = membership.Name,
-                ImageUrl = membership.ImageUrl,
+                Description = membership.Description,
                 Price = membership.Price,
-                Description = membership.Description
+                ImageUrl = membership.ImageUrl,
+                StartDate = startDate
             };
 
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public IActionResult OnPost()
         {
             if (!ModelState.IsValid)
                 return Page();
 
-            return RedirectToPage("/Membership/Summary", new
+            return RedirectToPage("/Membership/Success", new
             {
                 id = Input.MembershipTypeId,
+                date = Input.StartDate,
                 first = Input.FirstName,
                 last = Input.LastName,
                 email = Input.Email,
-                address = Input.Address,
-                phone = Input.Phone,
-                startDate = Input.StartDate
+                phone = Input.Phone
             });
         }
     }
-
 }
