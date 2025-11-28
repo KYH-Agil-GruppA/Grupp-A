@@ -19,16 +19,16 @@ namespace MainApp.Pages.Membership
         public class SignupInputModel
         {
             public int MembershipTypeId { get; set; }
-            public string MembershipName { get; set; }
-            public string Description { get; set; }
-            public string ImageUrl { get; set; }
+            public string MembershipName { get; set; } = "";
+            public string Description { get; set; } = "";
+            public string ImageUrl { get; set; } = "";
             public decimal Price { get; set; }
 
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
-            public string Email { get; set; }
-            public string Address { get; set; }
-            public string Phone { get; set; }
+            public string FirstName { get; set; } = "";
+            public string LastName { get; set; } = "";
+            public string Email { get; set; } = "";
+            public string Address { get; set; } = "";
+            public string Phone { get; set; } = "";
             public DateTime StartDate { get; set; }
         }
 
@@ -37,9 +37,7 @@ namespace MainApp.Pages.Membership
             var membership = await _membershipService.GetByIdAsync(id);
 
             if (membership == null)
-            {
                 return RedirectToPage("/Error");
-            }
 
             Input = new SignupInputModel
             {
@@ -62,7 +60,7 @@ namespace MainApp.Pages.Membership
             return RedirectToPage("/Membership/Success", new
             {
                 id = Input.MembershipTypeId,
-                date = Input.StartDate,
+                date = Input.StartDate.ToString("yyyy-MM-dd"),
                 first = Input.FirstName,
                 last = Input.LastName,
                 email = Input.Email,

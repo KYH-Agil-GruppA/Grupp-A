@@ -17,14 +17,14 @@ namespace MainApp.Pages.Membership
 
         public class SuccessInfoModel
         {
-            public string MembershipName { get; set; }
+            public string MembershipName { get; set; } = "";
             public decimal Price { get; set; }
             public DateTime StartDate { get; set; }
 
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
-            public string Email { get; set; }
-            public string Phone { get; set; }
+            public string FirstName { get; set; } = "";
+            public string LastName { get; set; } = "";
+            public string Email { get; set; } = "";
+            public string Phone { get; set; } = "";
         }
 
         public async Task<IActionResult> OnGetAsync(
@@ -36,6 +36,7 @@ namespace MainApp.Pages.Membership
             string phone)
         {
             var membership = await _membershipService.GetByIdAsync(id);
+
             if (membership == null)
                 return RedirectToPage("/Error");
 
