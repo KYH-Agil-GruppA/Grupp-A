@@ -46,6 +46,8 @@ public class Program
         builder.Services.AddScoped<INotificationService, NotificationService>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IMembershipService, MembershipService>();
+        builder.Services.AddScoped<IMembershipPurchaseService, MembershipPurchaseService>();
+
 
 
 
