@@ -25,5 +25,14 @@ namespace Service.Services
             return await _context.MembershipTypes
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
+
+        public async Task<int> SavePurchaseAsync(MembershipPurchase purchase)
+        {
+            _context.MembershipPurchases.Add(purchase);
+            await _context.SaveChangesAsync();
+            return purchase.Id;
+        }
+
+
     }
 }
