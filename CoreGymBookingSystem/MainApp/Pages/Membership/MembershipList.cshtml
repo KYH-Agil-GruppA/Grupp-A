@@ -43,8 +43,8 @@
 
                         <a href="javascript:void(0)"
                            class="primary-btn pricing-btn"
-                           onclick="openMembershipModal('@m.Name', '@m.Description', '@m.Price', '@m.ImageUrl')">
-                            Choose
+                           onclick="openMembershipModal('@m.Name', '@m.Description', '@m.Price', '@m.ImageUrl', '@m.Id')">
+                           Choose
                         </a>
 
 
@@ -55,7 +55,7 @@
         </div>
     </div>
     <!-- Membership Details Modal -->
-    <div class="modal fade" id="membershipModal" tabindex="-1" aria-labelledby="membershipModalLabel" aria-hidden="true">
+    <div class="modal fade" id="membershipModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content" style="border-radius:15px; overflow:hidden;">
 
@@ -63,68 +63,76 @@
                 <button type="button"
                         class="close position-absolute"
                         style="top:10px; right:15px; z-index:1051;"
-                        data-dismiss="modal"
-                        aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                        data-dismiss="modal">
+                    <span>&times;</span>
                 </button>
-
 
                 <div class="modal-body p-0">
 
                     <div class="row g-0">
-                        <!-- Left img DETAILS -->
 
+                        <!-- LEFT IMAGE -->
                         <div class="col-lg-6 membership-image-box">
                             <img id="modalImage" src="" alt="">
                         </div>
-
 
                         <!-- RIGHT DETAILS -->
                         <div class="col-lg-6 p-4">
 
                             <h4 id="modalName" class="mb-3"></h4>
+                            <p id="modalDescription" class="text-muted"></p>
+                            <h3 id="modalPrice" style="color:#000;"></h3>
 
-                            <p id="modalDescription" style="font-size:14px; color:#666;"></p>
+                            <!-- ✅ REAL FORM FOR REDIRECT -->
+                            <form method="get" action="/Membership/Signup">
 
-                            <h3 id="modalPrice" class="mt-3" style="color:#000;"></h3>
+                                <input type="hidden" id="membershipId" name="id" />
+                                <input type="hidden" id="membershipName" name="name" />
 
-                            <div class="mb-3">
-                                <label>Facility</label>
-                                <select id="modalFacility" class="form-control">
-                                    <option value="Core Gym KYH">Core Gym KYH</option>
-                                </select>
-                            </div>
+                                <div class="mb-3">
+                                    <label>Facility</label>
+                                    <select id="modalFacility" name="facility" class="form-control">
+                                        <option value="Core Gym KYH">Core Gym KYH</option>
+                                    </select>
+                                </div>
 
-                            <div class="mb-3 mt-4">
-                                <label>Start Date</label>
-                                <input id="modalStartDate" type="date" class="form-control" />
-                            </div>
+                                <div class="mb-3">
+                                    <label>Start Date</label>
+                                    <input id="modalStartDate" type="date" name="startDate" class="form-control" required />
+                                </div>
 
-                            <button class="primary-btn pricing-btn w-100 mt-3" id="modalButton">
-                                Add to Cart
-                            </button>
+                                <button type="submit"
+                                        class="primary-btn pricing-btn w-100 mt-3">
+                                    Add to Cart
+                                </button>
+
+                            </form>
+                            <!-- END FORM -->
 
                         </div>
                     </div>
+
                 </div>
-
-
             </div>
         </div>
     </div>
+    
     @section Scripts
     {
         <script>
-            function openMembershipModal(name, description, price, imageUrl) {
+                       function openMembershipModal(name, description, price, imageUrl, id) {
 
                 document.getElementById("modalName").innerText = name;
                 document.getElementById("modalDescription").innerText = description;
                 document.getElementById("modalPrice").innerText = price + " kr";
                 document.getElementById("modalImage").src = imageUrl;
 
+                document.getElementById("membershipId").value = id;
+
                 var modal = new bootstrap.Modal(document.getElementById('membershipModal'));
                 modal.show();
             }
+
         </script>
 
     }
