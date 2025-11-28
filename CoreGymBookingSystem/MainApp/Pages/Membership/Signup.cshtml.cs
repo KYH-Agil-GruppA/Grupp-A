@@ -1,17 +1,15 @@
+using DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Service.Interfaces;
 
 namespace MainApp.Pages.Membership
 {
-    public class SignupModel : PageModel
+    public class SignupModel(IMembershipService membershipService,
+                       IMembershipPurchaseService purchaseService) : PageModel
     {
-        private readonly IMembershipService _membershipService;
-
-        public SignupModel(IMembershipService membershipService)
-        {
-            _membershipService = membershipService;
-        }
+        private readonly IMembershipService _membershipService = membershipService;
+        private readonly IMembershipPurchaseService _purchaseService = purchaseService;
 
         [BindProperty]
         public SignupInputModel Input { get; set; }
@@ -52,15 +50,29 @@ namespace MainApp.Pages.Membership
             return Page();
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPost()
         {
             if (!ModelState.IsValid)
                 return Page();
 
+            var purchase = new MembershipPurchase
+            {
+                MembershipTypeId = Input.MembershipTypeId,
+                FirstName = Input.FirstName,
+                LastName = Input.LastName,
+                Email = Input.Email,
+                Address = Input.Address,
+                Phone = Input.Phone,
+                StartDate = Input.StartDate,
+                PurchaseDate = DateTime.Now
+            };
+
+            await _purchaseService.AddAsync(purchase);
+
             return RedirectToPage("/Membership/Success", new
             {
                 id = Input.MembershipTypeId,
-                date = Input.StartDate.ToString("yyyy-MM-dd"),
+                date = Input.StartDate,
                 first = Input.FirstName,
                 last = Input.LastName,
                 email = Input.Email,
