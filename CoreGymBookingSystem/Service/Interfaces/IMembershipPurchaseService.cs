@@ -10,6 +10,8 @@ namespace Service.Interfaces
     public interface IMembershipPurchaseService
     {
         Task AddAsync(MembershipPurchase purchase);
+        Task<bool> ExistsAsync(string email, DateTime startDate);
+
     }
 
 }

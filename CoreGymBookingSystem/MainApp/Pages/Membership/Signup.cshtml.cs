@@ -55,6 +55,19 @@ namespace MainApp.Pages.Membership
             if (!ModelState.IsValid)
                 return Page();
 
+            if (Input.StartDate.Date < DateTime.Today)
+            {
+                ModelState.AddModelError(string.Empty, "Start date cannot be in the past.");
+                return Page();
+            }
+
+            var existing = await _purchaseService.ExistsAsync(Input.Email, Input.StartDate);
+            if (existing)
+            {
+                ModelState.AddModelError(string.Empty, "You have already booked this date.");
+                return Page();
+            }
+
             var purchase = new MembershipPurchase
             {
                 MembershipTypeId = Input.MembershipTypeId,

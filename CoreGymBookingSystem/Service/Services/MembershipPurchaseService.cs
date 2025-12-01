@@ -1,5 +1,6 @@
 ﻿using DAL.DbContext;
 using DAL.Entities;
+using Microsoft.EntityFrameworkCore;
 using Service.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -23,5 +24,12 @@ namespace Service.Services
             _context.MembershipPurchases.Add(purchase);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<bool> ExistsAsync(string email, DateTime startDate)
+        {
+            return await _context.MembershipPurchases
+                .AnyAsync(x => x.Email == email && x.StartDate.Date == startDate.Date);
+        }
+
     }
 }
