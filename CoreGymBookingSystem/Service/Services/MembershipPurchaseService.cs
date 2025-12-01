@@ -25,11 +25,12 @@ namespace Service.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> ExistsAsync(string email, DateTime startDate)
+        public async Task<bool> ExistsAsync(string email, DateOnly startDate)
         {
             return await _context.MembershipPurchases
-                .AnyAsync(x => x.Email == email && x.StartDate.Date == startDate.Date);
+                .AnyAsync(x => x.Email == email && x.StartDate == startDate);
         }
+
 
     }
 }

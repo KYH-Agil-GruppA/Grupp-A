@@ -5,11 +5,17 @@ using Service.Interfaces;
 
 namespace MainApp.Pages.Membership
 {
-    public class SignupModel(IMembershipService membershipService,
-                       IMembershipPurchaseService purchaseService) : PageModel
+    public class SignupModel : PageModel
     {
-        private readonly IMembershipService _membershipService = membershipService;
-        private readonly IMembershipPurchaseService _purchaseService = purchaseService;
+        private readonly IMembershipService _membershipService;
+        private readonly IMembershipPurchaseService _purchaseService;
+
+        public SignupModel(IMembershipService membershipService,
+                           IMembershipPurchaseService purchaseService)
+        {
+            _membershipService = membershipService;
+            _purchaseService = purchaseService;
+        }
 
         [BindProperty]
         public SignupInputModel Input { get; set; }
@@ -27,10 +33,12 @@ namespace MainApp.Pages.Membership
             public string Email { get; set; } = "";
             public string Address { get; set; } = "";
             public string Phone { get; set; } = "";
+
             public DateTime StartDate { get; set; }
         }
 
-        public async Task<IActionResult> OnGet(int id, DateTime startDate)
+        // GET
+        public async Task<IActionResult> OnGet(int id, DateOnly startDate)
         {
             var membership = await _membershipService.GetByIdAsync(id);
 
@@ -44,30 +52,37 @@ namespace MainApp.Pages.Membership
                 Description = membership.Description,
                 Price = membership.Price,
                 ImageUrl = membership.ImageUrl,
-                StartDate = startDate
+                StartDate = startDate.ToDateTime(TimeOnly.MinValue)
             };
 
             return Page();
         }
 
+        // POST
         public async Task<IActionResult> OnPost()
         {
             if (!ModelState.IsValid)
                 return Page();
 
+            // 1. Past date validation
             if (Input.StartDate.Date < DateTime.Today)
             {
                 ModelState.AddModelError(string.Empty, "Start date cannot be in the past.");
                 return Page();
             }
 
-            var existing = await _purchaseService.ExistsAsync(Input.Email, Input.StartDate);
+          
+
+            // 2. Duplicate check
+            var start = DateOnly.FromDateTime(Input.StartDate);
+            var existing = await _purchaseService.ExistsAsync(Input.Email, start);
             if (existing)
             {
                 ModelState.AddModelError(string.Empty, "You have already booked this date.");
                 return Page();
             }
 
+            // 3. Save
             var purchase = new MembershipPurchase
             {
                 MembershipTypeId = Input.MembershipTypeId,
@@ -76,16 +91,17 @@ namespace MainApp.Pages.Membership
                 Email = Input.Email,
                 Address = Input.Address,
                 Phone = Input.Phone,
-                StartDate = DateOnly.FromDateTime(Input.StartDate),
+                StartDate = start,
                 PurchaseDate = DateOnly.FromDateTime(DateTime.Now)
             };
 
             await _purchaseService.AddAsync(purchase);
 
+            // 4. Redirect
             return RedirectToPage("/Membership/Success", new
             {
                 id = Input.MembershipTypeId,
-                date = Input.StartDate,
+                date = start,
                 first = Input.FirstName,
                 last = Input.LastName,
                 email = Input.Email,
