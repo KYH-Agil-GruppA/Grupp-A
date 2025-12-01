@@ -98,7 +98,8 @@
 
                                 <div class="mb-3">
                                     <label>Start Date</label>
-                                    <input id="modalStartDate" type="date" name="startDate" class="form-control" required />
+                                    <input id="modalStartDate" type="date" name="startDate"
+                                           class="form-control" required min="" />
                                 </div>
 
                                 <button type="submit"
@@ -120,7 +121,7 @@
     @section Scripts
     {
         <script>
-                       function openMembershipModal(name, description, price, imageUrl, id) {
+                              function openMembershipModal(name, description, price, imageUrl, id) {
 
                 document.getElementById("modalName").innerText = name;
                 document.getElementById("modalDescription").innerText = description;
@@ -129,9 +130,15 @@
 
                 document.getElementById("membershipId").value = id;
 
+                let today = new Date().toISOString().split("T")[0];
+                let dateInput = document.getElementById("modalStartDate");
+                dateInput.min = today;  
+                dateInput.value = today; 
+
                 var modal = new bootstrap.Modal(document.getElementById('membershipModal'));
                 modal.show();
             }
+
 
         </script>
 

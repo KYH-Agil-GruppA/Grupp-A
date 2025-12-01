@@ -75,7 +75,7 @@
 
                     <div class="form-group">
                         <label>Start Date</label>
-                        <input type="date" name="startDate" class="form-control" required />
+                        <input type="date" name="startDate" id="modalStartDate" class="form-control" required />
                     </div>
 
                     <button type="submit"
@@ -92,20 +92,39 @@
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        $(document).ready(function () {
+<script>
+    $(document).ready(function () {
 
-            $('.choose-btn').click(function () {
+        var today = new Date();
 
-                $('#membershipId').val($(this).data('id'));
-                $('#membershipModalLabel').text($(this).data('name'));
-                $('#modalDescription').text($(this).data('description'));
-                $('#modalPrice').text($(this).data('price') + " kr");
-
-                $('#membershipModal').modal('show');
+        if ($.fn.datepicker) {
+            $('#modalStartDate').datepicker({
+                format: 'yyyy-mm-dd',
+                startDate: today,    
+                autoclose: true
             });
+        } else {
+            var todayIso = today.toISOString().split("T")[0];
+            $("#modalStartDate").attr("min", todayIso);
+            $("#modalStartDate").val(todayIso);
+        }
 
+        $('.choose-btn').click(function () {
+
+            $('#membershipId').val($(this).data('id'));
+            $('#membershipModalLabel').text($(this).data('name'));
+            $('#modalDescription').text($(this).data('description'));
+            $('#modalPrice').text($(this).data('price') + " kr");
+
+            if ($.fn.datepicker) {
+                $('#modalStartDate').datepicker('update', today);
+            } else {
+                $("#modalStartDate").val(today.toISOString().split("T")[0]);
+            }
+
+            $('#membershipModal').modal('show');
         });
-    </script>
-}
+
+    });
+</script>
+
