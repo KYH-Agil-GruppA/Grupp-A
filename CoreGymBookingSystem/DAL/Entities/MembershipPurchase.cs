@@ -19,8 +19,8 @@ namespace DAL.Entities
         public string Address { get; set; }
         public string Phone { get; set; }
 
-        public DateTime StartDate { get; set; }
-        public DateTime PurchaseDate { get; set; } = DateTime.Now;
+        public DateOnly StartDate { get; set; }
+        public DateOnly PurchaseDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
     }
 }
 

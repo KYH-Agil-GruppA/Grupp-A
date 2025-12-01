@@ -76,8 +76,8 @@ namespace MainApp.Pages.Membership
                 Email = Input.Email,
                 Address = Input.Address,
                 Phone = Input.Phone,
-                StartDate = Input.StartDate,
-                PurchaseDate = DateTime.Now
+                StartDate = DateOnly.FromDateTime(Input.StartDate),
+                PurchaseDate = DateOnly.FromDateTime(DateTime.Now)
             };
 
             await _purchaseService.AddAsync(purchase);
